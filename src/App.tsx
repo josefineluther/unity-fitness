@@ -1,38 +1,12 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Button from './components/Button'
 import Home from './routes/Home'
-import { useState, useEffect } from 'react'
 import type { Page } from './types/types'
+import AllEvents from './routes/AllEvents'
+import { usePages } from './hooks/usePages'
 
 function App() {
-  const [pages, setPages] = useState([])
-
-  useEffect(() => {
-    async function getPages() {
-      const query = `
-      query {
-        pages {
-          title
-          slug
-          documentId
-          showInMenu
-          menuOrder
-        }
-      }`
-
-      const res = await fetch('https://competent-addition-09352633f0.strapiapp.com/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query })
-      })
-
-      const data = await res.json()
-      setPages(data.data.pages)
-    }
-    getPages()
-  }, [])
+  const { pages } = usePages()
 
   return (
     <BrowserRouter>
@@ -44,17 +18,27 @@ function App() {
           </Link>
         </div>
         <div>
-          {pages.map((page: Page) => (
-            <Link key={page.documentId} to={'/' + page.slug === 'hem' ? page.slug : ''}>
-              {page.title}
-            </Link>
-          ))}
-          <Button text='Boka pass'></Button>
+          {pages
+            .filter((page: Page) => page.showInMenu)
+            .sort((a: Page, b: Page) => a.menuOrder - b.menuOrder)
+            .map((page: Page) => {
+              const to = page.slug === 'hem' ? '/' : `/${page.slug}`
+
+              return (
+                <Link key={page.documentId} to={to}>
+                  {page.title}
+                </Link>
+              )
+            })}
+          <Link to='/alla-pass'>
+            <Button text='Boka pass'></Button>
+          </Link>
         </div>
       </nav>
       <main>
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/alla-pass' element={<AllEvents />} />
         </Routes>
       </main>
       <footer>

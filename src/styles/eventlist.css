@@ -1,0 +1,15 @@
+.list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.event-in-list img {
+  width: 100%;
+}
+
+.event-in-list {
+  background: #c6c6c6;
+  border-radius: 16px;
+  overflow: hidden;
+  padding-bottom: 1em;
+}
