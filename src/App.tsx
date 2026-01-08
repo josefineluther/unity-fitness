@@ -20,7 +20,7 @@ function App() {
         }
       }`
 
-      const res = await fetch('http://localhost:1337/graphql', {
+      const res = await fetch('https://competent-addition-09352633f0.strapiapp.com/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
