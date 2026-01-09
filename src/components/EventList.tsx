@@ -49,24 +49,43 @@ function EventList() {
     <div className='list'>
       {events.map((event) => (
         <div className='event-in-list' key={event.slug}>
-          <img src={event.image.url} />
-          <p>
-            {event.event_categories.map((category) => (
-              <span key={category.name}>{category.name} </span>
-            ))}
-          </p>
-          <p>
-            {new Date(event.datetime).toLocaleDateString('sv-SE', {
-              weekday: 'long',
-              day: 'numeric',
-              month: 'long',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
-          </p>
-          <h2>{event.title}</h2>
-          <p>Instruktör: {event.instructor.name}</p>
-          <Button color='light' text='Boka Pass'></Button>
+          <div className='image-wrapper'>
+            <img src={event.image.url} />
+            <div className='categories'>
+              {event.event_categories.map((category) => (
+                <div className='category' key={category.name}>
+                  {category.name}{' '}
+                </div>
+              ))}
+            </div>
+            <Button color='light' text='Boka'></Button>
+          </div>
+          <div className='text-wrapper'>
+            <div>
+              <p>
+                {new Date(event.datetime).toLocaleTimeString('sv-SE', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </p>
+              <p style={{ whiteSpace: 'nowrap' }}>45 min</p>
+              {/* <p>
+              {new Date(event.datetime).toLocaleDateString('sv-SE', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </p> */}
+            </div>
+            <div>
+              <p>
+                <b>{event.title}</b>
+              </p>
+              <p>med {event.instructor.name}</p>
+            </div>
+          </div>
         </div>
       ))}
     </div>

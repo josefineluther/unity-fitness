@@ -1,18 +1,12 @@
 type ButtonProps = {
   text: string
-  color?: string
+  color?: 'light' | 'dark'
   onClick?: () => void
 }
 
-function Button({ text, onClick, color }: ButtonProps) {
+function Button({ text, onClick, color = 'dark' }: ButtonProps) {
   return (
-    <button
-      onClick={onClick}
-      style={{
-        background: color === 'light' ? '#f6f6f6' : '#2d2d2d',
-        color: color === 'light' ? '#2d2d2d' : '#f6f6f6'
-      }}
-    >
+    <button className={`button ${color}`} onClick={onClick}>
       {text}
     </button>
   )
