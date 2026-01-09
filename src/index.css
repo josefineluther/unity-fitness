@@ -5,6 +5,7 @@
   --background-color: #f6f6f6;
   --hover-dark: #747474;
   --hover-light: #e0e0e0;
+  --error: rgb(255, 128, 128);
   --border-radius: 10px;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

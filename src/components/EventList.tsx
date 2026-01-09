@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import type { Event } from '../types/types'
 import '../styles/eventlist.css'
-import Button from './Button'
 
 function EventList() {
   const [events, setEvents] = useState<Event[]>([])
+
+  const availableSpots = 2
 
   useEffect(() => {
     async function getEvents() {
@@ -28,6 +29,8 @@ function EventList() {
             studio {
               name
             }
+            spots
+            minutes
           }
         }`
 
@@ -51,6 +54,7 @@ function EventList() {
         <div className='event-in-list' key={event.slug}>
           <div className='image-wrapper'>
             <img src={event.image.url} />
+            {/*
             <div className='categories'>
               {event.event_categories.map((category) => (
                 <div className='category' key={category.name}>
@@ -58,18 +62,14 @@ function EventList() {
                 </div>
               ))}
             </div>
-            <Button color='light' text='Boka'></Button>
+            */}
+            {availableSpots > 0 ? <div className='spots available'>{availableSpots} lediga platser</div> : <div className='spots full'>Fullbokat</div>}
           </div>
           <div className='text-wrapper'>
-            <div>
-              <p>
-                {new Date(event.datetime).toLocaleTimeString('sv-SE', {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </p>
-              <p style={{ whiteSpace: 'nowrap' }}>45 min</p>
-              {/* <p>
+            <p className='event-title'>
+              {event.title}, {event.minutes} min
+            </p>
+            {/* <p>
               {new Date(event.datetime).toLocaleDateString('sv-SE', {
                 weekday: 'long',
                 day: 'numeric',
@@ -78,13 +78,14 @@ function EventList() {
                 minute: '2-digit'
               })}
             </p> */}
-            </div>
-            <div>
-              <p>
-                <b>{event.title}</b>
-              </p>
-              <p>med {event.instructor.name}</p>
-            </div>
+            <p className='small-text'>
+              {new Date(event.datetime).toLocaleTimeString('sv-SE', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </p>
+            <p className='small-text'>{event.instructor.name}</p>
+            <p className='small-text'>{event.studio.name}</p>
           </div>
         </div>
       ))}

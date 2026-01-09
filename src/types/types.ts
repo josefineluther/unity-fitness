@@ -25,4 +25,6 @@ export interface Event {
   studio: {
     name: string
   }
+  spots: number
+  minutes: number
 }
