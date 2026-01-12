@@ -1,0 +1,57 @@
+.admin {
+  padding: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.muted {
+  opacity: 0.75;
+}
+
+.error {
+  color: crimson;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.checkbox {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px 8px;
+  text-align: left;
+}
+
+thead th {
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr {
+  border-top: 1px solid #eee;
+}
