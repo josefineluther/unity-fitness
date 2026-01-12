@@ -1,8 +1,59 @@
+.wrapper {
+  margin: 4rem 3rem 7rem;
+}
+
 .list {
   display: grid;
   gap: 2rem;
   grid-template-columns: 1fr;
-  margin: 5rem 3rem 7rem;
+}
+
+.date-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.date-button {
+  width: 4rem;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem 0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: var(--border-radius);
+}
+
+.date-number {
+  margin-top: 1rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.date-button:hover {
+  background: var(--hover-light);
+}
+
+.date-button[aria-selected='true'] {
+  background: var(--text-color);
+  color: var(--background-color);
+}
+
+.arrow {
+  margin: 0.5rem;
+  background: none;
+  border: none;
+}
+
+.arrow:hover {
+  color: var(--hover-dark);
+}
+
+.arrow:not(:disabled) {
+  cursor: pointer;
 }
 
 .event-in-list img {
@@ -82,6 +133,12 @@
 
 .full {
   background: var(--error);
+}
+
+.no-events {
+  text-align: center;
+  width: 100%;
+  font-size: 1.1rem;
 }
 
 .category {
