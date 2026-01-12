@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Button from './components/Button'
 import Home from './routes/Home'
+import AdminDashboard from './routes/AdminDashboard'
+import InstructorOverview from './routes/InstructorOverview'
 import type { Page } from './types/types'
 import AllEvents from './routes/AllEvents'
 import { usePages } from './hooks/usePages'
@@ -33,12 +35,16 @@ function App() {
           <Link to='/alla-pass'>
             <Button text='Boka pass'></Button>
           </Link>
+  <Link to="/admin">Admin</Link>
+  <Link to="/admin/instructors">Instruktörer</Link>
         </div>
       </nav>
       <main>
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/alla-pass' element={<AllEvents />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/instructors" element={<InstructorOverview />} />
         </Routes>
       </main>
       <footer>
