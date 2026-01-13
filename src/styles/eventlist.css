@@ -117,6 +117,9 @@
 }
 
 .spots {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   width: fit-content;
   font-weight: 500;
   font-size: 0.8rem;
@@ -151,9 +154,11 @@
 }
 
 .info-section {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  justify-content: center;
   align-items: center;
-  gap: 0.4rem;
+  grid-column-gap: 0.4rem;
 }
 
 @media (min-width: 768px) {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import type { Event } from '../types/types'
 import '../styles/eventlist.css'
 import { ChevronLeft, ChevronRight, Clock, Flag, User, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 function EventList() {
   const [events, setEvents] = useState<Event[]>([])
@@ -93,43 +94,41 @@ function EventList() {
               const availableSpots = event.spots - booked
 
               return (
-                <div className='event-in-list' key={event.slug}>
-                  <div className='image-wrapper'>
-                    <img src={event.image.url} />
-                    {availableSpots > 0 ? (
-                      <div className='spots available info-section'>
-                        <Users size={12} /> {availableSpots} lediga platser
-                      </div>
-                    ) : (
-                      <div className='spots full info-section'>
-                        {' '}
-                        <Users size={12} /> Fullbokat
-                      </div>
-                    )}
-                  </div>
-                  <div className='text-wrapper'>
-                    <p className='event-title'>
-                      {event.title}, {event.minutes} min
-                    </p>
-                    <div className='info-section'>
-                      <Clock size={13} />
-                      <p className='small-text'>
-                        {new Date(event.datetime).toLocaleTimeString('sv-SE', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                <Link to={`/pass/${event.slug}`}>
+                  <div className='event-in-list' key={event.slug}>
+                    <div className='image-wrapper'>
+                      <img src={event.image.url} />
+                      {availableSpots > 0 ? (
+                        <div className='spots available'>
+                          <Users size={12} /> {availableSpots} lediga platser
+                        </div>
+                      ) : (
+                        <div className='spots full'>
+                          {' '}
+                          <Users size={12} /> Fullbokat
+                        </div>
+                      )}
+                    </div>
+                    <div className='text-wrapper'>
+                      <p className='event-title'>
+                        {event.title}, {event.minutes} min
                       </p>
-                    </div>
-                    <div className='info-section'>
-                      <User size={16} />
-                      <p className='small-text'>{event.instructor.name}</p>
-                    </div>
-                    <div className='info-section'>
-                      <Flag size={13} />
-                      <p className='small-text'>{event.studio.name}</p>
+                      <div className='info-section'>
+                        <Clock size={13} />
+                        <p className='small-text'>
+                          {new Date(event.datetime).toLocaleTimeString('sv-SE', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                        <User size={13} />
+                        <p className='small-text'>{event.instructor.name}</p>
+                        <Flag size={13} />
+                        <p className='small-text'>{event.studio.name}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               )
             })}
         </div>
