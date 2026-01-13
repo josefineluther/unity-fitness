@@ -6,6 +6,8 @@ import InstructorOverview from './routes/InstructorOverview'
 import type { Page } from './types/types'
 import AllEvents from './routes/AllEvents'
 import { usePages } from './hooks/usePages'
+import PassDetailsPage from './routes/PassDetailsPage'
+
 
 function App() {
   const { pages } = usePages()
@@ -43,6 +45,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/alla-pass' element={<AllEvents />} />
+          <Route path='/pass/:id' element={<PassDetailsPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/instructors" element={<InstructorOverview />} />
         </Routes>

@@ -2,6 +2,7 @@ type ButtonProps = {
   text: string
   color?: 'light' | 'dark'
   onClick?: () => void
+  type?: 'button' | 'submit' | 'reset'
 }
 
 function Button({ text, onClick, color = 'dark' }: ButtonProps) {
