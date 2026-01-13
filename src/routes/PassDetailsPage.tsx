@@ -51,8 +51,8 @@ function PassDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const [pass, setPass] = useState<PassData | null>(null);
   const [loading, setLoading] = useState(true);
-  // const [formData, setFormData] = useState({ name: '', email: '' });
-  // const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [message, setMessage] = useState('');
 
   const date = pass
     ? new Date(pass.datetime).toLocaleDateString('sv-SE', {
@@ -132,6 +132,44 @@ function PassDetailsPage() {
     fetchPass();
   }, [id]);
 
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!formData.name.trim() || !formData.email.trim()) {
+      setMessage('Vänligen fyll i alla fält.');
+      return;
+    }
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(formData.email)) {
+      setMessage('Vänligen ange en giltig email.');
+      return;
+    }
+
+    setMessage('Skickar bokning...');
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_STRAPI_URL}/api/bookings`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: { ...formData, pass: id } }),
+        }
+      );
+
+      if (res.ok) {
+        setMessage('Bokning genomförd!');
+        setFormData({ name: '', email: '' });
+      } else throw new Error('Bokning misslyckades');
+    } catch (error) {
+      console.error(error);
+      setMessage('Något gick snett. Testa igen senare. ');
+    }
+  }
 
   if (loading) return <p role="status">Laddar passdetaljer...</p>;
   if (!pass) return <p role="alert">Hittar inga nya pass.</p>;
