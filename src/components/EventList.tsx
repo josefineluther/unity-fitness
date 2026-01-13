@@ -97,11 +97,14 @@ function EventList() {
                   <div className='image-wrapper'>
                     <img src={event.image.url} />
                     {availableSpots > 0 ? (
-                      <div className='spots available'>
+                      <div className='spots available info-section'>
                         <Users size={12} /> {availableSpots} lediga platser
                       </div>
                     ) : (
-                      <div className='spots full'>Fullbokat</div>
+                      <div className='spots full info-section'>
+                        {' '}
+                        <Users size={12} /> Fullbokat
+                      </div>
                     )}
                   </div>
                   <div className='text-wrapper'>
