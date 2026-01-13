@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import '../styles/eventlist.css'
-import { useEvents } from '../hooks/useEvents'
+import { useEvents } from '../hooks/useEvents.tsx'
 
 function EventList() {
   const { events } = useEvents()

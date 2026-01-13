@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import './Home.css'
-import { useEvents } from '../hooks/useEvents'
+import { useEvents } from '../hooks/useEvents.tsx'
 
 function Home() {
   const { events, loading } = useEvents({ pollingInterval: 60000 })

@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import type { Event } from '../types/types'
 
 type UseEventsOptions = {
-  pollingInterval?: number // ms
+  pollingInterval?: number 
 }
 
 export function useEvents({ pollingInterval = 60000 }: UseEventsOptions = {}) {
@@ -29,7 +29,9 @@ export function useEvents({ pollingInterval = 60000 }: UseEventsOptions = {}) {
       }`
 
     try {
-      const res = await fetch('https://competent-addition-09352633f0.strapiapp.com/graphql', {
+      const base = (import.meta as any).env?.VITE_STRAPI_URL || 'https://competent-addition-09352633f0.strapiapp.com/graphql'
+      const url = base.replace(/\/$/, '')
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })
