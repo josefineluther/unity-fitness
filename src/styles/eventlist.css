@@ -48,7 +48,7 @@
   border: none;
 }
 
-.arrow:hover {
+.arrow.arrow:not(:disabled):hover {
   color: var(--hover-dark);
 }
 
@@ -148,6 +148,12 @@
   font-size: 0.8rem;
   padding: 0.2rem 0.6rem;
   border-radius: 16px;
+}
+
+.info-section {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 @media (min-width: 768px) {
