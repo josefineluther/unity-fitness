@@ -49,7 +49,7 @@ a {
   color: var(--text-color);
 }
 
-a:hover {
+nav a:hover {
   color: var(--hover-dark);
 }
 

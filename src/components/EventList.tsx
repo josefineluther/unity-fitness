@@ -24,7 +24,7 @@ function EventList() {
     async function getEvents() {
       const query = `
         query {
-          events {
+          events(pagination: { page: 1, pageSize: 50 }) {
             title
             description
             datetime
@@ -94,8 +94,8 @@ function EventList() {
               const availableSpots = event.spots - booked
 
               return (
-                <Link to={`/pass/${event.slug}`}>
-                  <div className='event-in-list' key={event.slug}>
+                <Link to={`/pass/${event.slug}`} key={event.slug}>
+                  <div className='event-in-list'>
                     <div className='image-wrapper'>
                       <img src={event.image.url} />
                       {availableSpots > 0 ? (
