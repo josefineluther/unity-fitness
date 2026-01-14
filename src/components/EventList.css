@@ -11,12 +11,18 @@
 .date-picker {
   display: flex;
   align-items: center;
-  justify-content: center;
+  overflow-x: auto;
   gap: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.date-picker::-webkit-scrollbar {
+  display: none;
 }
 
 .date-button {
-  width: 4rem;
+  flex: 0 0 52px;
   border: none;
   background: none;
   font-size: 0.9rem;
@@ -164,6 +170,13 @@
 @media (min-width: 768px) {
   .list {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1000px) {
+  .date-picker {
+    width: 100%;
+    justify-content: center;
   }
 }
 
