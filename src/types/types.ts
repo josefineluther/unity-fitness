@@ -7,6 +7,12 @@ export interface Page {
   menuOrder: number
 }
 
+export interface Booking {
+  booking_reference: string
+  customer_name: string
+  customer_email: string
+}
+
 export interface Event {
   title: string
   slug: string
@@ -27,4 +33,5 @@ export interface Event {
   }
   spots: number
   minutes: number
+  bookings: Booking[]
 }
