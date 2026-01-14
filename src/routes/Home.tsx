@@ -1,9 +1,12 @@
 import { useMemo } from 'react'
 import './Home.css'
 import { useEvents } from '../hooks/useEvents.tsx'
+import { useArticles } from '../hooks/useArticles.tsx'
 
 function Home() {
   const { events, loading } = useEvents({ pollingInterval: 60000 })
+
+  const { articles, loading: articlesLoading } = useArticles({ pollingInterval: 0 })
 
   const upcoming = useMemo(() =>
     events
@@ -76,10 +79,28 @@ function Home() {
         </div>
       </section>
 
+      <section id="articles" className="articles" aria-label="Senaste artiklar">
+        <h2>Nyheter</h2>
+        {articlesLoading ? (
+          <p>Laddar nyheter</p>
+        ) : (
+          <div className="articles-grid">
+            {articles.slice(0, 3).map((a: any) => (
+              <article key={a.id ?? a.slug} className="article-card card">
+                {a.image?.url && <img src={a.image.url} alt={a.image.alternativeText ?? a.title} className="article-image" />}
+                <h3 className="article-title">{a.title}</h3>
+                {a.excerpt && <p className="article-excerpt">{a.excerpt}</p>}
+                <a className="btn ghost" href={`/articles/${a.slug ?? ''}`}>Läs mer</a>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
       <section id="classes" className="classes" aria-label="Kommande pass">
         <h2>Kommande pass</h2>
         {loading ? (
-          <p>Laddar pass...</p>
+          <p>Laddar pass</p>
         ) : (
           <ul className="class-list">
             {events
