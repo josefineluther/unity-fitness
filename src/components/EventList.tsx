@@ -3,11 +3,14 @@ import type { Event } from '../types/types'
 import '../styles/eventlist.css'
 import { ChevronLeft, ChevronRight, Clock, Flag, User, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 function EventList() {
   const [events, setEvents] = useState<Event[]>([])
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toDateString())
   const [startDate, setStartDate] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   const dates = []
   for (let i = 0; i <= 13; i++) {
@@ -22,6 +25,7 @@ function EventList() {
 
   useEffect(() => {
     async function getEvents() {
+      setLoading(true)
       const query = `
         query {
           events(pagination: { page: 1, pageSize: 50 }) {
@@ -60,6 +64,7 @@ function EventList() {
 
       const data = await res.json()
       setEvents(data.data.events)
+      setLoading(false)
     }
     getEvents()
   }, [])
@@ -88,7 +93,25 @@ function EventList() {
       </div>
       <div className='wrapper'>
         <div className='list'>
-          {filteredEvents.length > 0 &&
+          {loading && (
+            <SkeletonTheme baseColor='#dfebff' highlightColor='#f6f6f6'>
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className='event-in-list'>
+                  <div className='image-wrapper'>
+                    <Skeleton height={200} />
+                  </div>
+                  <div className='text-wrapper'>
+                    <Skeleton height={20} width='80%' style={{ marginBottom: '10px' }} />
+                    <div className='info-section'>
+                      <Skeleton height={14} width='60%' />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </SkeletonTheme>
+          )}
+          {!loading &&
+            filteredEvents.length > 0 &&
             filteredEvents.map((event) => {
               const booked = event.bookings?.length || 0
               const availableSpots = event.spots - booked
@@ -132,7 +155,7 @@ function EventList() {
               )
             })}
         </div>
-        {filteredEvents.length === 0 && <p className='no-events'>Inga pass denna dag!</p>}
+        {!loading && filteredEvents.length === 0 && <p className='no-events'>Inga pass denna dag!</p>}
       </div>
     </>
   )
