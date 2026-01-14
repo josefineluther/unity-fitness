@@ -20,7 +20,7 @@ function Home() {
     <main className="home-page">
       <header
         className="hero"
-        style={{ backgroundImage: `url('/Copilot_20260109_102947.png')` }}
+        style={{ backgroundImage: `url('/hero.jpeg')` }}
         aria-label="Hero"
       >
         <div className="hero-overlay">

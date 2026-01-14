@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { Event } from '../types/types'
-import '../styles/eventlist.css'
+import './EventList.css'
 import { ChevronLeft, ChevronRight, Clock, Flag, User, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
