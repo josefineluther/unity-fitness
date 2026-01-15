@@ -115,13 +115,25 @@ function EventList() {
             filteredEvents.map((event) => {
               const booked = event.bookings?.length || 0
               const availableSpots = event.spots - booked
+              const time = new Date(event.datetime).toLocaleTimeString('sv-SE', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })
+              const eventDate = new Date(event.datetime)
+              const now = new Date()
+              const hasPassed = eventDate < now
 
               return (
                 <Link to={`/pass/${event.slug}`} key={event.slug}>
                   <div className='event-in-list'>
                     <div className='image-wrapper'>
                       <img src={event.image.url} />
-                      {availableSpots > 0 ? (
+                      {hasPassed ? (
+                        <div className='spots full'>
+                          {' '}
+                          <Users size={12} /> Passerat
+                        </div>
+                      ) : availableSpots > 0 ? (
                         <div className='spots available'>
                           <Users size={12} /> {availableSpots} lediga platser
                         </div>
@@ -138,12 +150,7 @@ function EventList() {
                       </p>
                       <div className='info-section'>
                         <Clock size={13} />
-                        <p className='small-text'>
-                          {new Date(event.datetime).toLocaleTimeString('sv-SE', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </p>
+                        <p className='small-text'>{time}</p>
                         <User size={13} />
                         <p className='small-text'>{event.instructor.name}</p>
                         <Flag size={13} />
