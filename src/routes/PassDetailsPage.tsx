@@ -53,6 +53,7 @@ function PassDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [message, setMessage] = useState('');
+  const [eventId, setEventId] = useState<number | null>(null);
 
   const date = pass
     ? new Date(pass.datetime).toLocaleDateString('sv-SE', {
@@ -105,6 +106,9 @@ function PassDetailsPage() {
 
         const event = json.data.events.find((e) => e.slug === id);
 
+        setEventId(event.id);
+
+
         if (!event) {
           setPass(null);
           return;
@@ -152,12 +156,10 @@ function PassDetailsPage() {
     setMessage('Skickar bokning...');
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_STRAPI_URL}/api/bookings`,
-        {
+      const res = await fetch('https://competent-addition-09352633f0.strapiapp.com/api/bookings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: { ...formData, pass: id } }),
+          body: JSON.stringify({ data: { customer_name: formData.name, customer_email: formData.email, event: eventId } }),
         }
       );
 
@@ -172,7 +174,7 @@ function PassDetailsPage() {
   }
 
   if (loading) return <p role="status">Laddar passdetaljer...</p>;
-  if (!pass) return <p role="alert">Hittar inga nya pass.</p>;
+  if (!pass) return <p role="alert">Kan inte hitta passet du söker.</p>;
 
   return (
     <main className="pass-details" aria-labelledby="pass-title">
