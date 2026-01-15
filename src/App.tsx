@@ -8,7 +8,6 @@ import AllEvents from './routes/AllEvents'
 import { usePages } from './hooks/usePages'
 import PassDetailsPage from './routes/PassDetailsPage'
 
-
 function App() {
   const { pages } = usePages()
 
@@ -18,7 +17,7 @@ function App() {
         <div>
           <Link to='/' className='logo'>
             <img alt='Unity Fitness Logo' src='/logo.jpg' />
-            Unity Fitness
+            <p className='brand-name'>Unity Fitness</p>
           </Link>
         </div>
         <div>
@@ -37,8 +36,6 @@ function App() {
           <Link to='/alla-pass'>
             <Button text='Boka pass'></Button>
           </Link>
-  <Link to="/admin">Admin</Link>
-  <Link to="/admin/instructors">Instruktörer</Link>
         </div>
       </nav>
       <main>
@@ -46,11 +43,17 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/alla-pass' element={<AllEvents />} />
           <Route path='/pass/:id' element={<PassDetailsPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/instructors" element={<InstructorOverview />} />
+          <Route path='/admin' element={<AdminDashboard />} />
+          <Route path='/admin/instructors' element={<InstructorOverview />} />
         </Routes>
       </main>
       <footer>
+        <div className='staff'>
+          <h2>Personal</h2>
+          <Link to='/admin'>Admin</Link>
+          <Link to='/admin/instructors'>Instruktörer</Link>
+        </div>
+        <hr></hr>
         <p>&copy; {new Date().getFullYear()} Unity Fitness</p>
       </footer>
     </BrowserRouter>
