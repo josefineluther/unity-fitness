@@ -2,11 +2,13 @@ import { useMemo } from 'react'
 import './Home.css'
 import { useEvents } from '../hooks/useEvents.tsx'
 import { useArticles } from '../hooks/useArticles.tsx'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 function Home() {
   const { events, loading } = useEvents({ pollingInterval: 60000 })
 
-  const { articles, loading: articlesLoading } = useArticles({ pollingInterval: 0 })
+  const { articles } = useArticles()
 
   const upcoming = useMemo(() =>
     events
@@ -38,51 +40,48 @@ function Home() {
       </header>
 
       <section className="next-pass card center" aria-live="polite">
-        <h3>Nästa pass</h3>
-        {loading ? (
-          <p>Laddar</p>
-        ) : upcoming.length === 0 ? (
-          <p>Inga kommande pass.</p>
-        ) : (
-          <div className="next-grid">
-            {upcoming.map((e) => (
-              <div key={e.slug ?? e.title} className="next-item">
-                <div className="next-left">
-                  <strong>{e.title}</strong>
-                  <div className="time">{new Date(e.datetime).toLocaleString('sv-SE', { hour: '2-digit', minute: '2-digit', weekday: 'short', day: 'numeric' })}</div>
-                </div>
-                <div className="next-right">
-                  <small>{e.instructor?.name ?? ''}</small>
-                  <button className="btn primary small">Boka</button>
-                </div>
+          <h3>Nästa pass</h3>
+          {loading ? (
+            <SkeletonTheme baseColor="#dfebff" highlightColor="#f6f6f6">
+              <div className="next-grid">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="next-item">
+                    <div className="next-left">
+                      <Skeleton height={18} width="60%" style={{ marginBottom: 6 }} />
+                      <div className="time"><Skeleton height={14} width={140} /></div>
+                    </div>
+                    <div className="next-right">
+                      <small><Skeleton height={12} width={80} /></small>
+                      <div style={{ marginTop: 8 }}><Skeleton height={28} width={70} /></div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="features simple" aria-label="Vad vi erbjuder">
-        <div className="feature">
-          <div className="icon"></div>
-          <h4>Styrka</h4>
-          <p>.</p>
-        </div>
-        <div className="feature">
-          <div className="icon"></div>
-          <h4>Rörlighet</h4>
-          <p>.</p>
-        </div>
-        <div className="feature">
-          <div className="icon"></div>
-          <h4>Flexibelt</h4>
-          <p>.</p>
-        </div>
+            </SkeletonTheme>
+          ) : upcoming.length === 0 ? (
+            <p>Inga kommande pass.</p>
+          ) : (
+            <div className="next-grid">
+              {upcoming.map((e) => (
+                <div key={e.slug ?? e.title} className="next-item">
+                  <div className="next-left">
+                    <strong>{e.title}</strong>
+                    <div className="time">{new Date(e.datetime).toLocaleString('sv-SE', { hour: '2-digit', minute: '2-digit', weekday: 'short', day: 'numeric' })}</div>
+                  </div>
+                  <div className="next-right">
+                    <small>{e.instructor?.name ?? ''}</small>
+                    <button className="btn primary small">Boka</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
       </section>
 
       <section id="articles" className="articles" aria-label="Senaste artiklar">
         <h2>Nyheter</h2>
-        {articlesLoading ? (
-          <p>Laddar nyheter</p>
+        {articles.length === 0 ? (
+          <p>Inga nyheter</p>
         ) : (
           <div className="articles-grid">
             {articles.slice(0, 3).map((a: any) => (
@@ -97,31 +96,7 @@ function Home() {
         )}
       </section>
 
-      <section id="classes" className="classes" aria-label="Kommande pass">
-        <h2>Kommande pass</h2>
-        {loading ? (
-          <p>Laddar pass</p>
-        ) : (
-          <ul className="class-list">
-            {events
-              .filter((e) => new Date(e.datetime).getTime() >= Date.now())
-              .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
-              .slice(0, 8)
-              .map((ev) => (
-                <li key={ev.slug} className="class-item">
-                  <div>
-                    <strong>{ev.title}</strong>
-                    <div className="time">{new Date(ev.datetime).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}</div>
-                  </div>
-                  <div className="actions">
-                    <span className="instructor">{ev.instructor?.name}</span>
-                    <button className="btn ghost small">Boka</button>
-                  </div>
-                </li>
-              ))}
-          </ul>
-        )}
-      </section>
+      
     </main>
   )
 }
