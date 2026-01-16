@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './PassDetailsPage.css';
 import Button from '../components/Button';
-import { Calendar } from 'lucide-react';
-import { Clock } from 'lucide-react';
-import { MapPin } from 'lucide-react';
-import { Users } from 'lucide-react';
-import { ShieldUser } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, ShieldUser } from 'lucide-react';
+
 
 interface GraphQLEvent {
+  id: string;
   title: string;
   description?: string;
   datetime: string;
@@ -45,6 +43,7 @@ interface PassData {
   instructor: string;
   place: string;
   spots: number;
+  slug?: string;
 }
 
 function PassDetailsPage() {
@@ -76,7 +75,7 @@ function PassDetailsPage() {
       try {
         const query = `
         query {
-          events {
+          events(pagination: { limit: 100 }) {
             title
             description
             datetime
@@ -84,6 +83,7 @@ function PassDetailsPage() {
             url
             alternativeText
             }
+            event_categories { name }
             slug
             spots
             minutes
@@ -106,13 +106,12 @@ function PassDetailsPage() {
 
         const event = json.data.events.find((e) => e.slug === id);
 
-        setEventId(event.id);
-
-
         if (!event) {
           setPass(null);
           return;
         }
+
+        setEventId(event.id);
 
         setPass({
           image: event.image ?? null,
