@@ -27,46 +27,76 @@ function EventList() {
   useEffect(() => {
     async function getEvents() {
       setLoading(true)
+
       const query = `
-        query {
-          events(pagination: { page: 1, pageSize: 50 }) {
-            title
-            description
-            datetime
-            image {
-              url
-              alternativeText
-            }
-            instructor {
-              name
-            }
-            event_categories {
-              name
-            }
-            slug
-            studio {
-              name
-            }
-            spots
-            minutes
-            bookings {
-              booking_reference
-            }
-          }
-        }`
+      query {
+        events(pagination: { page: 1, pageSize: 50 }) {
+          title
+          description
+          datetime
+          image { url alternativeText }
+          instructor { name }
+          event_categories { name }
+          slug
+          studio { name }
+          spots
+          minutes
+          bookings { booking_reference }
+          recurrence_weekday
+          recurrence_interval
+          recurrence_end_date
+          recurrence_time
+        }
+      }`
 
       const res = await fetch('https://competent-addition-09352633f0.strapiapp.com/graphql', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })
       })
 
       const data = await res.json()
-      setEvents(data.data.events)
+      const fetchedEvents: Event[] = data.data.events
+      const occurrences: Event[] = []
+
+      const weekdayMap: Record<string, number> = {
+        monday: 1,
+        tuesday: 2,
+        wednesday: 3,
+        thursday: 4,
+        friday: 5,
+        saturday: 6,
+        sunday: 0
+      }
+
+      fetchedEvents.forEach((event) => {
+        if (!event.recurrence_weekday) {
+          occurrences.push(event)
+          return
+        }
+
+        const start = new Date()
+        const end = event.recurrence_end_date ? new Date(event.recurrence_end_date) : new Date(start.getTime() + 14 * 24 * 60 * 60 * 1000)
+        const [h, m] = event.recurrence_time?.split(':').map(Number) || [0, 0]
+
+        const current = new Date(start)
+        while (current <= end) {
+          if (current.getDay() === weekdayMap[event.recurrence_weekday]) {
+            const occurrenceDate = new Date(current)
+            occurrenceDate.setHours(h, m, 0, 0)
+            occurrences.push({
+              ...event,
+              datetime: occurrenceDate.toISOString()
+            })
+          }
+          current.setDate(current.getDate() + 1)
+        }
+      })
+
+      setEvents(occurrences)
       setLoading(false)
     }
+
     getEvents()
   }, [])
 
@@ -124,7 +154,7 @@ function EventList() {
 
               return (
                 !hasPassed && (
-                  <Link to={`/pass/${event.slug}`} key={event.slug}>
+                  <Link to={`/pass/${event.slug}?datetime=${event.datetime}`} key={event.slug}>
                     <div className='event-in-list'>
                       <div className='image-wrapper'>
                         <img src={event.image?.url || placeholderImg} alt={event.title} />

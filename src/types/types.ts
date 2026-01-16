@@ -17,7 +17,7 @@ export interface Event {
   title: string
   slug: string
   description: string
-  datetime: string | null
+  datetime: string
   image: {
     url: string
     alternativeText: string
@@ -34,6 +34,10 @@ export interface Event {
   spots: number
   minutes: number
   bookings: Booking[]
+  recurrence_weekday?: string
+  recurrence_interval?: number
+  recurrence_end_date?: string
+  recurrence_time?: string
 }
 
 export interface Article {
