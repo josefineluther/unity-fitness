@@ -35,3 +35,12 @@ export interface Event {
   minutes: number
   bookings: Booking[]
 }
+
+export interface Article {
+  title?: string
+  description?: string
+  slug?: string
+  cover?: { url?: string; alternativeText?: string }
+  author: { name: string }
+  category: { name: string }
+}
