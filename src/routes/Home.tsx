@@ -12,8 +12,8 @@ function Home() {
 
   const upcoming = useMemo(() =>
     events
-      .filter((e) => new Date(e.datetime).getTime() >= Date.now())
-      .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime())
+      .filter((e) => typeof e.datetime === 'string' && new Date(e.datetime).getTime() >= Date.now())
+      .sort((a, b) => new Date(a.datetime as string).getTime() - new Date(b.datetime as string).getTime())
       .slice(0, 3),
     [events]
   )
@@ -66,7 +66,7 @@ function Home() {
                 <div key={e.slug ?? e.title} className="next-item">
                   <div className="next-left">
                     <strong>{e.title}</strong>
-                    <div className="time">{new Date(e.datetime).toLocaleString('sv-SE', { hour: '2-digit', minute: '2-digit', weekday: 'short', day: 'numeric' })}</div>
+                    <div className="time">{e.datetime ? new Date(e.datetime).toLocaleString('sv-SE', { hour: '2-digit', minute: '2-digit', weekday: 'short', day: 'numeric' }) : ''}</div>
                   </div>
                   <div className="next-right">
                     <small>{e.instructor?.name ?? ''}</small>
