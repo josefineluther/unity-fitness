@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import type { Event } from '../types/types'
 
 type UseEventsOptions = {
-  pollingInterval?: number 
+  pollingInterval?: number
 }
 
 export function useEvents({ pollingInterval = 60000 }: UseEventsOptions = {}) {
@@ -14,7 +14,7 @@ export function useEvents({ pollingInterval = 60000 }: UseEventsOptions = {}) {
     setLoading(true)
     const query = `
       query {
-        events {
+        events(pagination: { page: 1, pageSize: 50 }) {
           title
           description
           datetime
