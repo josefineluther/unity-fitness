@@ -6,7 +6,7 @@ import { Calendar, Clock, MapPin, Users, ShieldUser } from 'lucide-react';
 import Skeleton from 'react-loading-skeleton';
 
 interface GraphQLEvent {
-  id: string;
+  documentId: string;
   title: string;
   description?: string;
   datetime: string;
@@ -52,8 +52,9 @@ function PassDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [message, setMessage] = useState('');
-  const [eventId, setEventId] = useState<number | null>(null);
+  const [eventId, setEventId] = useState<string | null>(null);
   const [isBooked, setIsBooked] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const date = pass
     ? new Date(pass.datetime).toLocaleDateString('sv-SE', {
@@ -77,6 +78,7 @@ function PassDetailsPage() {
         const query = `
         query {
           events(pagination: { limit: 100 }) {
+            documentId
             title
             description
             datetime
@@ -112,7 +114,7 @@ function PassDetailsPage() {
           return;
         }
 
-        setEventId(event.id as unknown as number);
+        setEventId(event.documentId);
 
         setPass({
           image: event.image ?? null,
@@ -143,6 +145,11 @@ function PassDetailsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    if (!pass) {
+      setMessage('Pass data not found.');
+      return;
+    }
+
     if (!formData.name.trim() || !formData.email.trim()) {
       setMessage('Vänligen fyll i alla fält.');
       return;
@@ -153,7 +160,7 @@ function PassDetailsPage() {
       return;
     }
 
-    setMessage('Skickar bokning...');
+    setIsSubmitting(true);
 
     try {
       const res = await fetch(
@@ -163,9 +170,9 @@ function PassDetailsPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             data: {
+              event: eventId,
               customer_name: formData.name,
               customer_email: formData.email,
-              event: eventId,
             },
           }),
         }
@@ -179,6 +186,8 @@ function PassDetailsPage() {
     } catch (error) {
       console.error(error);
       setMessage('Något gick snett. Testa igen senare. ');
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -251,40 +260,55 @@ function PassDetailsPage() {
           </>
         ) : (
           <>
-          <h2 id="booking-title">Boka {pass.title}:</h2>
-            <p>Fyll i dina uppgifter för att slutföra bokningen.</p>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="name">För- och efternamn:</label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
+            {isSubmitting ? (
+              <div>
+                <Skeleton
+                  height="2rem"
+                  width="100%"
+                  style={{ marginBottom: '1rem' }}
                 />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email:</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
+                <Skeleton
+                  height="2rem"
+                  width="100%"
+                  style={{ marginBottom: '1rem' }}
                 />
+                <Skeleton height="3rem" width="50%" />
               </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <h2 id="booking-title">Boka {pass.title}:</h2>
+                <p>Fyll i dina uppgifter för att slutföra bokningen.</p>
+                <div className="form-group">
+                  <label htmlFor="name">För- och efternamn:</label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-              <Button text="Slutför bokning" type="submit" />
-              {message && (
-                <p role="status" className="message">
-                  {message}
-                </p>
-              )}
-            </form>
+                <div className="form-group">
+                  <label htmlFor="email">Email:</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                {message && (
+                  <p role="status" className="message">
+                    {message}
+                  </p>
+                )}
+                <Button text="Slutför bokning" type="submit" />
+              </form>
+            )}
           </>
         )}
       </section>

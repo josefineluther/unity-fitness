@@ -31,7 +31,10 @@ type Instructor = {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleString("sv-SE")
+  return new Date(iso).toLocaleString("sv-SE", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  })
 }
 
 export default function InstructorOverview() {
@@ -58,8 +61,7 @@ export default function InstructorOverview() {
           throw new Error(json.errors[0].message)
         }
 
-        // sortera instruktörer alfabetiskt + deras pass på datum
-        const sorted: Instructor[] = [...(json.data.instructors as Instructor[])]
+        const sorted: Instructor[] = [...json.data.instructors]
           .sort((a, b) => a.name.localeCompare(b.name, "sv"))
           .map((i) => ({
             ...i,
@@ -86,38 +88,39 @@ export default function InstructorOverview() {
   }, [instructors, search])
 
   return (
-    <div className="admin">
-      <h1>Instruktörer</h1>
-      <p className="muted">Översikt över instruktörer.</p>
+    <div className="ioPage">
+      <h1 className="ioTitle">Instruktörer</h1>
+      <p className="ioSubtitle muted">Översikt över instruktörer.</p>
 
       <input
+        className="ioSearch"
         placeholder="Sök instruktör…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {loading && <p className="muted">Laddar…</p>}
-      {error && <p className="error">{error}</p>}
+      {loading && <p className="ioCenter muted">Laddar…</p>}
+      {error && <p className="ioCenter ioError">{error}</p>}
 
       {!loading && !error && filtered.length === 0 && (
-        <p className="muted">Inga instruktörer hittades.</p>
+        <p className="ioCenter muted">Inga instruktörer hittades.</p>
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <div className="cards">
+        <div className="ioGrid">
           {filtered.map((i) => (
-            <div key={i.documentId} className="card">
-              <div className="cardHead">
-                <h2>{i.name}</h2>
-                <span className="muted">{i.events?.length ?? 0} pass</span>
+            <div key={i.documentId} className="ioCard">
+              <div className="ioCardHead">
+                <h2 className="ioName">{i.name}</h2>
+                <span className="muted ioCount">{i.events?.length ?? 0} pass</span>
               </div>
 
               {(i.events?.length ?? 0) === 0 ? (
                 <p className="muted">Inga pass kopplade.</p>
               ) : (
-                <ul>
+                <ul className="ioList">
                   {i.events!.map((e) => (
-                    <li key={e.documentId}>
+                    <li key={e.documentId} className="ioItem">
                       <strong>{e.title}</strong>{" "}
                       <span className="muted">— {formatDate(e.datetime)}</span>
                     </li>
