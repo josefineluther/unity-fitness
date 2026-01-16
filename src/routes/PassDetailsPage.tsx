@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import './PassDetailsPage.css';
 import Button from '../components/Button';
 import { Calendar, Clock, MapPin, Users, ShieldUser } from 'lucide-react';
-
+import Skeleton from 'react-loading-skeleton';
 
 interface GraphQLEvent {
   id: string;
@@ -53,6 +53,7 @@ function PassDetailsPage() {
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [message, setMessage] = useState('');
   const [eventId, setEventId] = useState<number | null>(null);
+  const [isBooked, setIsBooked] = useState(false);
 
   const date = pass
     ? new Date(pass.datetime).toLocaleDateString('sv-SE', {
@@ -102,7 +103,7 @@ function PassDetailsPage() {
           }
         );
 
-        const json: EventsQueryResponse  = await res.json();
+        const json: EventsQueryResponse = await res.json();
 
         const event = json.data.events.find((e) => e.slug === id);
 
@@ -111,7 +112,7 @@ function PassDetailsPage() {
           return;
         }
 
-        setEventId(event.id);
+        setEventId(event.id as unknown as number);
 
         setPass({
           image: event.image ?? null,
@@ -155,16 +156,25 @@ function PassDetailsPage() {
     setMessage('Skickar bokning...');
 
     try {
-      const res = await fetch('https://competent-addition-09352633f0.strapiapp.com/api/bookings', {
+      const res = await fetch(
+        'https://competent-addition-09352633f0.strapiapp.com/api/bookings',
+        {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: { customer_name: formData.name, customer_email: formData.email, event: eventId } }),
+          body: JSON.stringify({
+            data: {
+              customer_name: formData.name,
+              customer_email: formData.email,
+              event: eventId,
+            },
+          }),
         }
       );
 
       if (res.ok) {
         setMessage('Bokning genomförd!');
         setFormData({ name: '', email: '' });
+        setIsBooked(true);
       } else throw new Error('Bokning misslyckades');
     } catch (error) {
       console.error(error);
@@ -172,88 +182,111 @@ function PassDetailsPage() {
     }
   }
 
-  if (loading) return <p role="status">Laddar passdetaljer...</p>;
+  if (loading)
+    return (
+      <div className="skeleton">
+        <Skeleton height="40rem" width="60%" style={{ marginBottom: '10px' }} />
+      </div>
+    );
   if (!pass) return <p role="alert">Kan inte hitta passet du söker.</p>;
 
   return (
     <main className="pass-details" aria-labelledby="pass-title">
       <div className="pass-wrapper">
         <div className="media-wrapper">
-        {pass.image && (
-          <img
-            src={pass.image.url}
-            alt={pass.image.alternativeText || pass.title}
-            className="pass-image"
-          />
-        )}
-      <div className="media-overlay">
-        <span className="category-badge">{pass.category}</span>
-      </div>
-    </div>
-      <h1 id="pass-title">{pass.title}</h1>
-      {pass.description && <p className="desc">{pass.description}</p>}
+          {pass.image && (
+            <img
+              src={pass.image.url}
+              alt={pass.image.alternativeText || pass.title}
+              className="pass-image"
+            />
+          )}
+          <div className="media-overlay">
+            <span className="category-badge">{pass.category}</span>
+          </div>
+        </div>
+        <h1 id="pass-title">{pass.title}</h1>
+        {pass.description && <p className="desc">{pass.description}</p>}
 
-      <section className="info-grid">
-        <ul>
-          <li className="info-card">
-            <Calendar className="icon" color="#1d468d" size={30} />
-            <strong>Datum:</strong> {date}
-          </li>
-          <li className="info-card">
-            <Clock className="icon" color="#1d468d" size={30} />
-            <strong>Tid & längd:</strong> {time} ({pass.minutes} min)
-          </li>
-          <li className="info-card">
-            <MapPin className="icon" color="#1d468d" size={30} />
-            <strong>Plats:</strong> {pass.place}
-          </li>
-          <li className="info-card">
-            <Users className="icon" color="#1d468d" size={30} />
-            <strong>Tillgängliga platser:</strong> {pass.spots}
-          </li>
-          <li className="info-card">
-            <ShieldUser className="icon" color="#1d468d" size={30} />
-            <strong>Instruktör:</strong> {pass.instructor}
-          </li>
-        </ul>
-      </section>
+        <section className="info-grid">
+          <ul>
+            <li className="info-card">
+              <Calendar className="icon" color="#1d468d" size={30} />
+              <strong>Datum:</strong> {date}
+            </li>
+            <li className="info-card">
+              <Clock className="icon" color="#1d468d" size={30} />
+              <strong>Tid & längd:</strong> {time} ({pass.minutes} min)
+            </li>
+            <li className="info-card">
+              <MapPin className="icon" color="#1d468d" size={30} />
+              <strong>Plats:</strong> {pass.place}
+            </li>
+            <li className="info-card">
+              <Users className="icon" color="#1d468d" size={30} />
+              <strong>Tillgängliga platser:</strong> {pass.spots}
+            </li>
+            <li className="info-card">
+              <ShieldUser className="icon" color="#1d468d" size={30} />
+              <strong>Instruktör:</strong> {pass.instructor}
+            </li>
+          </ul>
+        </section>
       </div>
 
       <section className="booking" aria-labelledby="booking-title">
-        <h2 id="booking-title">Boka {pass.title}:</h2>
-        <p>Fyll i dina uppgifter för att slutföra bokningen.</p>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">För- och efternamn:</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="email">Email:</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <Button text="Slutför bokning" type="submit" />
-          {message && (
+        {isBooked ? (
+          <>
             <p role="status" className="message">
               {message}
             </p>
-          )}
-        </form>
+            <Button
+              text="Boka på nytt"
+              onClick={() => {
+                setIsBooked(false);
+                setMessage('');
+                setFormData({ name: '', email: '' });
+              }}
+            />
+          </>
+        ) : (
+          <>
+          <h2 id="booking-title">Boka {pass.title}:</h2>
+            <p>Fyll i dina uppgifter för att slutföra bokningen.</p>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="name">För- och efternamn:</label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">Email:</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <Button text="Slutför bokning" type="submit" />
+              {message && (
+                <p role="status" className="message">
+                  {message}
+                </p>
+              )}
+            </form>
+          </>
+        )}
       </section>
     </main>
   );
