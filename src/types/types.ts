@@ -17,7 +17,7 @@ export interface Event {
   title: string
   slug: string
   description: string
-  datetime: string
+  datetime: string | null
   image: {
     url: string
     alternativeText: string
