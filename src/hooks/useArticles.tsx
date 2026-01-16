@@ -28,7 +28,6 @@ export function useArticles() {
 
       const data = await res.json()
       setArticles(data.data.articles)
-      console.log(data)
     }
     getArticles()
   }, [])
