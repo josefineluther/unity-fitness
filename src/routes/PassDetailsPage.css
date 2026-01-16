@@ -106,6 +106,10 @@ input:focus {
   margin-bottom: 2.5rem;
 }
 
+.info-grid ul {
+  padding: 1rem;
+}
+
 .info-card {
   background: #f6f8fc;
   display: flex;
