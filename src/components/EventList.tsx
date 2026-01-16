@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Clock, Flag, User, Users } from 'lucide-reac
 import { Link } from 'react-router-dom'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import placeholderImg from '/placeholder.jpeg'
 
 function EventList() {
   const [events, setEvents] = useState<Event[]>([])
@@ -69,8 +70,6 @@ function EventList() {
     getEvents()
   }, [])
 
-  console.log(events)
-
   return (
     <>
       <div className='date-picker'>
@@ -124,41 +123,46 @@ function EventList() {
               const hasPassed = eventDate < now
 
               return (
-                <Link to={`/pass/${event.slug}`} key={event.slug}>
-                  <div className='event-in-list'>
-                    <div className='image-wrapper'>
-                      <img src={event.image.url} />
-                      {hasPassed ? (
-                        <div className='spots full'>
-                          {' '}
-                          <Users size={12} /> Passerat
+                !hasPassed && (
+                  <Link to={`/pass/${event.slug}`} key={event.slug}>
+                    <div className='event-in-list'>
+                      <div className='image-wrapper'>
+                        <img src={event.image?.url || placeholderImg} alt={event.title} />
+                        {availableSpots > 0 ? (
+                          <div className='spots available'>
+                            <Users size={12} /> {availableSpots} lediga platser
+                          </div>
+                        ) : (
+                          <div className='spots full'>
+                            {' '}
+                            <Users size={12} /> Fullbokat
+                          </div>
+                        )}
+                      </div>
+                      <div className='text-wrapper'>
+                        <p className='event-title'>
+                          {event.title}, {event.minutes} min
+                        </p>
+                        <div className='info-section'>
+                          <Clock size={13} />
+                          <p className='small-text'>{time}</p>
+                          {event.instructor && (
+                            <>
+                              <User size={13} />
+                              <p className='small-text'>{event.instructor.name}</p>
+                            </>
+                          )}
+                          {event.studio && (
+                            <>
+                              <Flag size={13} />
+                              <p className='small-text'>{event.studio?.name}</p>
+                            </>
+                          )}
                         </div>
-                      ) : availableSpots > 0 ? (
-                        <div className='spots available'>
-                          <Users size={12} /> {availableSpots} lediga platser
-                        </div>
-                      ) : (
-                        <div className='spots full'>
-                          {' '}
-                          <Users size={12} /> Fullbokat
-                        </div>
-                      )}
-                    </div>
-                    <div className='text-wrapper'>
-                      <p className='event-title'>
-                        {event.title}, {event.minutes} min
-                      </p>
-                      <div className='info-section'>
-                        <Clock size={13} />
-                        <p className='small-text'>{time}</p>
-                        <User size={13} />
-                        <p className='small-text'>{event.instructor.name}</p>
-                        <Flag size={13} />
-                        <p className='small-text'>{event.studio.name}</p>
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                )
               )
             })}
         </div>
