@@ -47,15 +47,21 @@ function App() {
           <Route path='/admin/instructors' element={<InstructorOverview />} />
         </Routes>
       </main>
-      <footer>
-        <div className='staff'>
-          <h2>Personal</h2>
-          <Link to='/admin'>Admin</Link>
-          <Link to='/admin/instructors'>Instruktörer</Link>
-        </div>
-        <hr></hr>
-        <p>&copy; {new Date().getFullYear()} Unity Fitness</p>
-      </footer>
+<footer>
+  <div className="staff">
+    <h2>Personal</h2>
+  </div>
+
+  <div className="footer-admin">
+    <span className="footer-admin-label">Admin</span>
+    <Link to="/admin" className="footer-admin-link">Dashboard</Link>
+    <Link to="/admin/instructors" className="footer-admin-link">Instruktörer</Link>
+  </div>
+
+  <hr />
+  <p>&copy; {new Date().getFullYear()} Unity Fitness</p>
+</footer>
+
     </BrowserRouter>
   )
 }
