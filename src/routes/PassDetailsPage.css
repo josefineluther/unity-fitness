@@ -77,6 +77,8 @@ label {
 }
 
 input {
+  align-self: center;
+  width: 65%;
   padding: 0.5rem;
   border: 1px solid #d6d6d6;
   border-radius: 14px;

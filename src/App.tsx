@@ -8,6 +8,7 @@ import AllEvents from './routes/AllEvents'
 import { usePages } from './hooks/usePages'
 import PassDetailsPage from './routes/PassDetailsPage'
 import ScrollToTop from './hooks/scrollToTop'
+import SubscriptionsPage from './routes/SubscriptionsPage'
 
 function App() {
   const { pages } = usePages()
@@ -47,6 +48,7 @@ function App() {
           <Route path='/pass/:id' element={<PassDetailsPage />} />
           <Route path='/admin' element={<AdminDashboard />} />
           <Route path='/admin/instructors' element={<InstructorOverview />} />
+          <Route path='/medlemskap' element={<SubscriptionsPage />} />
         </Routes>
       </main>
       <footer>

@@ -18,10 +18,11 @@ interface GraphQLEvent {
     alternativeText?: string | null
   } | null
   event_categories?: {
-    name: string
-  }[]
-  instructor?: { name: string }
-  studio?: { name: string }
+    name: string;
+  }[];
+  instructor?: { name: string };
+  studio?: { name: string };
+  bookings?: { booking_reference: string }[];
 }
 
 interface EventsQueryResponse {
@@ -32,18 +33,20 @@ interface EventsQueryResponse {
 
 interface PassData {
   image?: {
-    url: string
-    alternativeText?: string | null
-  } | null
-  title: string
-  description?: string
-  category?: string
-  datetime: string
-  minutes: number
-  instructor: string
-  place: string
-  spots: number
-  slug?: string
+    url: string;
+    alternativeText?: string | null;
+  } | null;
+  title: string;
+  description?: string;
+  category?: string;
+  datetime: string;
+  isFull: boolean
+  minutes: number;
+  instructor: string;
+  place: string;
+  spots: number;
+  availableSpots: number;
+  slug?: string;
 }
 
 function PassDetailsPage() {
@@ -96,6 +99,9 @@ function PassDetailsPage() {
             minutes
             instructor {name}
             studio {name}
+            bookings {
+              booking_reference
+            }
           }
         }
       `
@@ -106,7 +112,8 @@ function PassDetailsPage() {
           body: JSON.stringify({ query })
         })
 
-        const json: EventsQueryResponse = await res.json()
+
+        const json: EventsQueryResponse = await res.json();
 
         const event = json.data.events.find((e) => e.slug === id)
 
@@ -117,6 +124,10 @@ function PassDetailsPage() {
 
         setEventId(event.documentId)
 
+        const bookedCount = event.bookings?.length ?? 0;
+        const availableSpots = Math.max(event.spots - bookedCount, 0);
+        const isFull = availableSpots <= 0;
+
         setPass({
           image: event.image ?? null,
           title: event.title,
@@ -125,6 +136,8 @@ function PassDetailsPage() {
           datetime: event.datetime,
           minutes: event.minutes,
           spots: event.spots,
+          availableSpots,
+          isFull,
           instructor: event.instructor?.name ?? 'Okänd instruktör',
           place: event.studio?.name ?? 'Okänd studio'
         })
@@ -147,7 +160,17 @@ function PassDetailsPage() {
     e.preventDefault()
 
     if (!pass) {
-      setMessage('Pass data not found.')
+      setMessage('Kan inte hitta pass.');
+      return;
+    }
+
+    if (!eventId) {
+      setMessage('Event saknas.');
+      return;
+    }
+
+    if (pass.isFull) {
+      setMessage('Passet är tyvärr fullbokat.')
       return
     }
 
@@ -177,10 +200,19 @@ function PassDetailsPage() {
       })
 
       if (res.ok) {
-        setMessage('Bokning genomförd!')
-        setFormData({ name: '', email: '' })
-        setIsBooked(true)
-      } else throw new Error('Bokning misslyckades')
+        setPass(prev =>
+          prev
+            ? {
+                ...prev,
+                availableSpots: Math.max(prev.availableSpots - 1, 0),
+                isFull: prev.availableSpots - 1 <= 0
+              }
+            : prev
+        )
+        setMessage('Bokning genomförd!');
+        setFormData({ name: '', email: '' });
+        setIsBooked(true);
+      } else throw new Error('Bokning misslyckades');
     } catch (error) {
       console.error(error)
       setMessage('Något gick snett. Testa igen senare. ')
@@ -223,9 +255,9 @@ function PassDetailsPage() {
               <MapPin className='icon' color='#1d468d' size={30} />
               <strong>Plats:</strong> {pass.place}
             </li>
-            <li className='info-card'>
-              <Users className='icon' color='#1d468d' size={30} />
-              <strong>Tillgängliga platser:</strong> {pass.spots}
+            <li className="info-card">
+              <Users className="icon" color="#1d468d" size={30} />
+              <strong>Tillgängliga platser:</strong> {pass.availableSpots}
             </li>
             <li className='info-card'>
               <ShieldUser className='icon' color='#1d468d' size={30} />
@@ -235,49 +267,81 @@ function PassDetailsPage() {
         </section>
       </div>
 
-      <section className='booking' aria-labelledby='booking-title'>
-        {isBooked ? (
-          <>
-            <p role='status' className='message'>
-              {message}
-            </p>
-            <Button
-              text='Boka på nytt'
-              onClick={() => {
-                setIsBooked(false)
-                setMessage('')
-                setFormData({ name: '', email: '' })
-              }}
-            />
-          </>
-        ) : (
-          <>
-            {isSubmitting ? (
-              <div>
-                <Skeleton height='2rem' width='100%' style={{ marginBottom: '1rem' }} />
-                <Skeleton height='2rem' width='100%' style={{ marginBottom: '1rem' }} />
-                <Skeleton height='3rem' width='50%' />
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <h2 id='booking-title'>Boka {pass.title}:</h2>
-                <p>Fyll i dina uppgifter för att slutföra bokningen.</p>
-                <div className='form-group'>
-                  <label htmlFor='name'>För- och efternamn:</label>
-                  <input id='name' name='name' type='text' value={formData.name} onChange={handleChange} required />
-                </div>
+      <section className="booking" aria-labelledby="booking-title">
+        {pass.isFull && (
+          <p role="status" className="message">
+            Detta pass är fullbokat och kan inte bokas.
+          </p>
+        )}
 
-                <div className='form-group'>
-                  <label htmlFor='email'>Email:</label>
-                  <input id='email' name='email' type='email' value={formData.email} onChange={handleChange} required />
-                </div>
-                {message && (
-                  <p role='status' className='message'>
-                    {message}
-                  </p>
+        {!pass.isFull && (
+          <>
+            {isBooked ? (
+              <>
+                <p role="status" className="message">
+                  {message}
+                </p>
+                <Button
+                  text="Boka på nytt"
+                  onClick={() => {
+                    setIsBooked(false);
+                    setMessage('');
+                    setFormData({ name: '', email: '' });
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                {isSubmitting ? (
+                  <div>
+                    <Skeleton
+                      height="2rem"
+                      width="100%"
+                      style={{ marginBottom: '1rem' }}
+                    />
+                    <Skeleton
+                      height="2rem"
+                      width="100%"
+                      style={{ marginBottom: '1rem' }}
+                    />
+                    <Skeleton height="3rem" width="50%" />
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit}>
+                    <h2 id="booking-title">Boka {pass.title}:</h2>
+                    <p>Fyll i dina uppgifter för att slutföra bokningen.</p>
+                    <div className="form-group">
+                      <label htmlFor="name">För- och efternamn:</label>
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="email">Email:</label>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    {message && (
+                      <p role="status" className="message">
+                        {message}
+                      </p>
+                    )}
+                    <Button text="Slutför bokning" type="submit" />
+                  </form>
                 )}
-                <Button text='Slutför bokning' type='submit' />
-              </form>
+              </>
             )}
           </>
         )}
