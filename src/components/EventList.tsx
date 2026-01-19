@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import placeholderImg from '/placeholder.jpeg'
+import Button from './Button'
 
 function EventList() {
   const [events, setEvents] = useState<Event[]>([])
@@ -196,7 +197,32 @@ function EventList() {
               )
             })}
         </div>
-        {!loading && filteredEvents.length === 0 && <p className='no-events'>Inga pass denna dag!</p>}
+        {!loading && filteredEvents.length === 0 && (
+          <div className='no-events'>
+            <p>Inga pass denna dag!</p>
+            <Button
+              text='Visa nästa dag'
+              onClick={() => {
+                const nextDay = new Date(selectedDate)
+                nextDay.setDate(nextDay.getDate() + 1)
+                setSelectedDate(nextDay.toDateString())
+              }}
+            ></Button>
+          </div>
+        )}
+        {!loading && filteredEvents.length > 0 && filteredEvents.every((e) => new Date(e.datetime) < new Date()) && (
+          <div className='no-events'>
+            <p>Alla pass för dagen har varit</p>
+            <Button
+              text='Visa nästa dag'
+              onClick={() => {
+                const nextDay = new Date(selectedDate)
+                nextDay.setDate(nextDay.getDate() + 1)
+                setSelectedDate(nextDay.toDateString())
+              }}
+            ></Button>
+          </div>
+        )}
       </div>
     </>
   )
