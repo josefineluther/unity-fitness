@@ -14,6 +14,20 @@ function EventList() {
   const [startDate, setStartDate] = useState(0)
   const [loading, setLoading] = useState(true)
 
+  function nextDay() {
+    const nextDay = new Date(selectedDate)
+    nextDay.setDate(nextDay.getDate() + 1)
+    setSelectedDate(nextDay.toDateString())
+
+    const today = new Date()
+    const endOfRange = new Date()
+    endOfRange.setDate(today.getDate() + startDate + 13)
+
+    if (nextDay > endOfRange) {
+      setStartDate(startDate + 14)
+    }
+  }
+
   const dates = []
   for (let i = 0; i <= 13; i++) {
     const date = new Date()
@@ -200,27 +214,13 @@ function EventList() {
         {!loading && filteredEvents.length === 0 && (
           <div className='no-events'>
             <p>Inga pass denna dag!</p>
-            <Button
-              text='Visa nästa dag'
-              onClick={() => {
-                const nextDay = new Date(selectedDate)
-                nextDay.setDate(nextDay.getDate() + 1)
-                setSelectedDate(nextDay.toDateString())
-              }}
-            ></Button>
+            <Button text='Visa nästa dag' onClick={nextDay}></Button>
           </div>
         )}
         {!loading && filteredEvents.length > 0 && filteredEvents.every((e) => new Date(e.datetime) < new Date()) && (
           <div className='no-events'>
             <p>Alla pass för dagen har varit</p>
-            <Button
-              text='Visa nästa dag'
-              onClick={() => {
-                const nextDay = new Date(selectedDate)
-                nextDay.setDate(nextDay.getDate() + 1)
-                setSelectedDate(nextDay.toDateString())
-              }}
-            ></Button>
+            <Button text='Visa nästa dag' onClick={nextDay}></Button>
           </div>
         )}
       </div>
