@@ -25,6 +25,11 @@ export function useEvents({ pollingInterval = 60000 }: UseEventsOptions = {}) {
           studio { name }
           spots
           minutes
+          bookings { booking_reference }
+          recurrence_weekday
+          recurrence_interval
+          recurrence_end_date
+          recurrence_time
         }
       }`
 
@@ -38,7 +43,44 @@ export function useEvents({ pollingInterval = 60000 }: UseEventsOptions = {}) {
       })
       const data = await res.json()
       if (!mounted.current) return
-      setEvents(Array.isArray(data.data?.events) ? data.data.events : [])
+      const fetchedEvents = Array.isArray(data.data?.events) ? data.data.events : []
+      const occurrences: Event[] = []
+
+      const weekdayMap: Record<string, number> = {
+        monday: 1,
+        tuesday: 2,
+        wednesday: 3,
+        thursday: 4,
+        friday: 5,
+        saturday: 6,
+        sunday: 0
+      }
+
+      fetchedEvents.forEach((event) => {
+        if (!event.recurrence_weekday) {
+          occurrences.push(event)
+          return
+        }
+
+        const start = new Date()
+        const end = event.recurrence_end_date ? new Date(event.recurrence_end_date) : new Date(start.getTime() + 14 * 24 * 60 * 60 * 1000)
+        const [h, m] = event.recurrence_time?.split(':').map(Number) || [0, 0]
+
+        const current = new Date(start)
+        while (current <= end) {
+          if (current.getDay() === weekdayMap[event.recurrence_weekday]) {
+            const occurrenceDate = new Date(current)
+            occurrenceDate.setHours(h, m, 0, 0)
+            occurrences.push({
+              ...event,
+              datetime: occurrenceDate.toISOString()
+            })
+          }
+          current.setDate(current.getDate() + 1)
+        }
+      })
+
+      setEvents(occurrences)
     } catch (e) {
       console.error('Failed to fetch events', e)
     } finally {
