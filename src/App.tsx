@@ -7,6 +7,7 @@ import type { Page } from './types/types'
 import AllEvents from './routes/AllEvents'
 import { usePages } from './hooks/usePages'
 import PassDetailsPage from './routes/PassDetailsPage'
+import ScrollToTop from './hooks/scrollToTop'
 
 function App() {
   const { pages } = usePages()
@@ -39,6 +40,7 @@ function App() {
         </div>
       </nav>
       <main>
+        <ScrollToTop />
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/alla-pass' element={<AllEvents />} />
