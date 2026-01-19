@@ -73,6 +73,10 @@ h1 {
   margin-top: 0;
 }
 
+.all-events {
+  margin-bottom: 2rem;
+}
+
 nav .button {
   padding: 1em 1.1rem;
   margin: 0 0 0 1rem;
@@ -160,8 +164,6 @@ footer a:hover {
 footer hr {
   margin: 3rem 0;
 }
-
-
 
 @media (min-width: 768px) {
   nav div,

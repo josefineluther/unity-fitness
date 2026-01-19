@@ -12,7 +12,7 @@ function AllEvents() {
 
   return (
     <>
-      <h1>{page?.title}</h1>
+      <h1 className='all-events'>{page?.title}</h1>
       <EventList />
     </>
   )
