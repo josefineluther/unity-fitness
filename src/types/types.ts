@@ -11,6 +11,7 @@ export interface Booking {
   booking_reference: string
   customer_name: string
   customer_email: string
+  datetime: string
 }
 
 export interface Event {
