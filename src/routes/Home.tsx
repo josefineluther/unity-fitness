@@ -12,7 +12,7 @@ function Home() {
   const { events, loading } = useEvents({ pollingInterval: 60000 })
   const { articles } = useArticles()
 
-  // Beräknar nästa tre pass
+  
   const upcoming = useMemo(
     () =>
       events
