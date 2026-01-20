@@ -18,11 +18,11 @@ interface GraphQLEvent {
     alternativeText?: string | null
   } | null
   event_categories?: {
-    name: string;
-  }[];
-  instructor?: { name: string };
-  studio?: { name: string };
-  bookings?: { booking_reference: string }[];
+    name: string
+  }[]
+  instructor?: { name: string }
+  studio?: { name: string }
+  bookings?: { datetime: string }[]
 }
 
 interface EventsQueryResponse {
@@ -33,21 +33,21 @@ interface EventsQueryResponse {
 
 interface PassData {
   image?: {
-    url: string;
-    alternativeText?: string | null;
-  } | null;
-  title: string;
-  description?: string;
-  category?: string;
-  datetime: string;
+    url: string
+    alternativeText?: string | null
+  } | null
+  title: string
+  description?: string
+  category?: string
+  datetime: string
   isFull: boolean
-  minutes: number;
-  instructor: string;
-  place: string;
-  spots: number;
-  availableSpots: number;
-  slug?: string;
-  hasPassed: boolean;
+  minutes: number
+  instructor: string
+  place: string
+  spots: number
+  availableSpots: number
+  slug?: string
+  hasPassed: boolean
 }
 
 function PassDetailsPage() {
@@ -63,6 +63,8 @@ function PassDetailsPage() {
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const datetimeParam = queryParams.get('datetime')
+
+  const datetimeISO = datetimeParam || ''
 
   const date = datetimeParam
     ? new Date(datetimeParam).toLocaleDateString('sv-SE', {
@@ -101,7 +103,7 @@ function PassDetailsPage() {
             instructor {name}
             studio {name}
             bookings {
-              booking_reference
+              datetime
             }
           }
         }
@@ -113,9 +115,7 @@ function PassDetailsPage() {
           body: JSON.stringify({ query })
         })
 
-
-
-        const json: EventsQueryResponse = await res.json();
+        const json: EventsQueryResponse = await res.json()
 
         const event = json.data.events.find((e) => e.slug === id)
 
@@ -126,20 +126,20 @@ function PassDetailsPage() {
 
         setEventId(event.documentId)
 
-        const bookedCount = event.bookings?.length ?? 0;
-        const availableSpots = Math.max(event.spots - bookedCount, 0);
-        const isFull = availableSpots <= 0;
-        const eventDate = new Date(event.datetime)
+        const filteredBookings = event.bookings?.filter((booking) => new Date(booking.datetime).getTime() === new Date(datetimeISO).getTime()) ?? []
+        const booked = filteredBookings?.length
+        const availableSpots = event.spots - booked
+        const isFull = availableSpots <= 0
+        const eventDate = new Date(datetimeISO)
         const now = new Date()
         const hasPassed = eventDate < now
-
 
         setPass({
           image: event.image ?? null,
           title: event.title,
           description: event.description,
           category: event.event_categories?.[0]?.name || 'Allmänt',
-          datetime: event.datetime,
+          datetime: datetimeISO,
           minutes: event.minutes,
           spots: event.spots,
           availableSpots,
@@ -157,7 +157,7 @@ function PassDetailsPage() {
     }
 
     fetchPass()
-  }, [id])
+  }, [id, datetimeISO])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -167,13 +167,13 @@ function PassDetailsPage() {
     e.preventDefault()
 
     if (!pass) {
-      setMessage('Kan inte hitta pass.');
-      return;
+      setMessage('Kan inte hitta pass.')
+      return
     }
 
     if (!eventId) {
-      setMessage('Event saknas.');
-      return;
+      setMessage('Event saknas.')
+      return
     }
 
     if (pass.isFull) {
@@ -207,13 +207,13 @@ function PassDetailsPage() {
             event: eventId,
             customer_name: formData.name,
             customer_email: formData.email,
-            datetime: pass.datetime
+            datetime: datetimeISO
           }
         })
       })
 
       if (res.ok) {
-        setPass(prev =>
+        setPass((prev) =>
           prev
             ? {
                 ...prev,
@@ -222,10 +222,10 @@ function PassDetailsPage() {
               }
             : prev
         )
-        setMessage('Bokning genomförd!');
-        setFormData({ name: '', email: '' });
-        setIsBooked(true);
-      } else throw new Error('Bokning misslyckades');
+        setMessage('Bokning genomförd!')
+        setFormData({ name: '', email: '' })
+        setIsBooked(true)
+      } else throw new Error('Bokning misslyckades')
     } catch (error) {
       console.error(error)
       setMessage('Något gick snett. Testa igen senare. ')
@@ -244,8 +244,10 @@ function PassDetailsPage() {
 
   return (
     <main className='pass-details' aria-labelledby='pass-title'>
-      <div className="prev-section">
-        <a href="/alla-pass" className="back-link"><ChevronLeft size={40} color="#1d468d" className='icon' alt-text="Tillbaka till alla pass" /></a>
+      <div className='prev-section'>
+        <a href='/alla-pass' className='back-link'>
+          <ChevronLeft size={40} color='#1d468d' className='icon' alt-text='Tillbaka till alla pass' />
+        </a>
       </div>
       <div className='pass-wrapper'>
         <div className='media-wrapper'>
@@ -271,8 +273,8 @@ function PassDetailsPage() {
               <MapPin className='icon' color='#1d468d' size={30} />
               <strong>Plats:</strong> {pass.place}
             </li>
-            <li className="info-card">
-              <Users className="icon" color="#1d468d" size={30} />
+            <li className='info-card'>
+              <Users className='icon' color='#1d468d' size={30} />
               <strong>Tillgängliga platser:</strong> {pass.availableSpots}
             </li>
             <li className='info-card'>
@@ -283,15 +285,15 @@ function PassDetailsPage() {
         </section>
       </div>
 
-      <section className="booking" aria-labelledby="booking-title">
+      <section className='booking' aria-labelledby='booking-title'>
         {pass.hasPassed && (
-          <p role="status" className="message">
+          <p role='status' className='message'>
             Detta pass har redan genomförts och går inte längre att boka.
           </p>
         )}
 
         {!pass.hasPassed && pass.isFull && (
-          <p role="status" className="message">
+          <p role='status' className='message'>
             Detta pass är fullbokat och kan inte bokas.
           </p>
         )}
@@ -300,9 +302,11 @@ function PassDetailsPage() {
           <>
             {isBooked ? (
               <>
-                <p role="status" className="message">{message}</p>
+                <p role='status' className='message'>
+                  {message}
+                </p>
                 <Button
-                  text="Boka på nytt"
+                  text='Boka på nytt'
                   onClick={() => {
                     setIsBooked(false)
                     setMessage('')
@@ -314,51 +318,29 @@ function PassDetailsPage() {
               <>
                 {isSubmitting ? (
                   <div>
-                    <Skeleton
-                      height="2rem"
-                      width="100%"
-                      style={{ marginBottom: '1rem' }}
-                    />
-                    <Skeleton
-                      height="2rem"
-                      width="100%"
-                      style={{ marginBottom: '1rem' }}
-                    />
-                    <Skeleton height="3rem" width="50%" />
+                    <Skeleton height='2rem' width='100%' style={{ marginBottom: '1rem' }} />
+                    <Skeleton height='2rem' width='100%' style={{ marginBottom: '1rem' }} />
+                    <Skeleton height='3rem' width='50%' />
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit}>
-                    <h2 id="booking-title">Boka {pass.title}:</h2>
+                    <h2 id='booking-title'>Boka {pass.title}:</h2>
                     <p>Fyll i dina uppgifter för att slutföra bokningen.</p>
-                    <div className="form-group">
-                      <label htmlFor="name">För- och efternamn:</label>
-                      <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                      />
+                    <div className='form-group'>
+                      <label htmlFor='name'>För- och efternamn:</label>
+                      <input id='name' name='name' type='text' value={formData.name} onChange={handleChange} required />
                     </div>
 
-                    <div className="form-group">
-                      <label htmlFor="email">Email:</label>
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                      />
+                    <div className='form-group'>
+                      <label htmlFor='email'>Email:</label>
+                      <input id='email' name='email' type='email' value={formData.email} onChange={handleChange} required />
                     </div>
                     {message && (
-                      <p role="status" className="message">
+                      <p role='status' className='message'>
                         {message}
                       </p>
                     )}
-                    <Button text="Slutför bokning" type="submit" />
+                    <Button text='Slutför bokning' type='submit' />
                   </form>
                 )}
               </>
