@@ -12,7 +12,6 @@ function Home() {
   const { events, loading } = useEvents({ pollingInterval: 60000 })
   const { articles } = useArticles()
 
-  
   const upcoming = useMemo(
     () =>
       events
@@ -61,8 +60,14 @@ function Home() {
             <p>Inga kommande pass.</p>
           ) : (
             upcoming.map((event) => {
-              const booked = event.bookings?.length || 0
-              const availableSpots = (event.spots || 0) - booked
+              const filteredBookings = event.bookings?.filter((booking) => new Date(booking.datetime).getTime() === new Date(event.datetime).getTime()) ?? []
+              const booked = filteredBookings?.length
+              const availableSpots = event.spots - booked
+
+              const date = new Date(event.datetime).toLocaleDateString('sv-SE', {
+                day: '2-digit',
+                month: 'long'
+              })
 
               const time = new Date(event.datetime).toLocaleTimeString('sv-SE', {
                 hour: '2-digit',
@@ -92,7 +97,9 @@ function Home() {
 
                       <div className='info-section'>
                         <Clock size={13} />
-                        <p className='small-text'>{time}</p>
+                        <p className='small-text'>
+                          {date} kl. {time}
+                        </p>
 
                         {event.instructor && (
                           <>
