@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import './PassDetailsPage.css'
 import Button from '../components/Button'
-import { Calendar, Clock, MapPin, Users, ShieldUser, ArrowBigLeft } from 'lucide-react'
+import { Calendar, Clock, MapPin, Users, ShieldUser, ChevronLeft } from 'lucide-react'
 import Skeleton from 'react-loading-skeleton'
 
 interface GraphQLEvent {
@@ -47,6 +47,7 @@ interface PassData {
   spots: number;
   availableSpots: number;
   slug?: string;
+  hasPassed: boolean;
 }
 
 function PassDetailsPage() {
@@ -128,6 +129,10 @@ function PassDetailsPage() {
         const bookedCount = event.bookings?.length ?? 0;
         const availableSpots = Math.max(event.spots - bookedCount, 0);
         const isFull = availableSpots <= 0;
+        const eventDate = new Date(event.datetime)
+        const now = new Date()
+        const hasPassed = eventDate < now
+
 
         setPass({
           image: event.image ?? null,
@@ -139,6 +144,7 @@ function PassDetailsPage() {
           spots: event.spots,
           availableSpots,
           isFull,
+          hasPassed,
           instructor: event.instructor?.name ?? 'Okänd instruktör',
           place: event.studio?.name ?? 'Okänd studio'
         })
@@ -175,6 +181,11 @@ function PassDetailsPage() {
       return
     }
 
+    if (pass.hasPassed) {
+      setMessage('Detta pass har redan varit och kan inte bokas.')
+      return
+    }
+
     if (!formData.name.trim() || !formData.email.trim()) {
       setMessage('Vänligen fyll i alla fält.')
       return
@@ -195,7 +206,8 @@ function PassDetailsPage() {
           data: {
             event: eventId,
             customer_name: formData.name,
-            customer_email: formData.email
+            customer_email: formData.email,
+            datetime: pass.datetime
           }
         })
       })
@@ -233,7 +245,7 @@ function PassDetailsPage() {
   return (
     <main className='pass-details' aria-labelledby='pass-title'>
       <div className="prev-section">
-        <a href="/alla-pass" className="back-link"><ArrowBigLeft size={40} color="#1d468d" />Tillbaka till alla pass</a>
+        <a href="/alla-pass" className="back-link"><ChevronLeft size={40} color="#1d468d" className='icon' alt-text="Tillbaka till alla pass" /></a>
       </div>
       <div className='pass-wrapper'>
         <div className='media-wrapper'>
@@ -272,25 +284,29 @@ function PassDetailsPage() {
       </div>
 
       <section className="booking" aria-labelledby="booking-title">
-        {pass.isFull && (
+        {pass.hasPassed && (
+          <p role="status" className="message">
+            Detta pass har redan genomförts och går inte längre att boka.
+          </p>
+        )}
+
+        {!pass.hasPassed && pass.isFull && (
           <p role="status" className="message">
             Detta pass är fullbokat och kan inte bokas.
           </p>
         )}
 
-        {!pass.isFull && (
+        {!pass.hasPassed && !pass.isFull && (
           <>
             {isBooked ? (
               <>
-                <p role="status" className="message">
-                  {message}
-                </p>
+                <p role="status" className="message">{message}</p>
                 <Button
                   text="Boka på nytt"
                   onClick={() => {
-                    setIsBooked(false);
-                    setMessage('');
-                    setFormData({ name: '', email: '' });
+                    setIsBooked(false)
+                    setMessage('')
+                    setFormData({ name: '', email: '' })
                   }}
                 />
               </>
