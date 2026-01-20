@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import './PassDetailsPage.css'
 import Button from '../components/Button'
-import { Calendar, Clock, MapPin, Users, ShieldUser } from 'lucide-react'
+import { Calendar, Clock, MapPin, Users, ShieldUser, ArrowBigLeft } from 'lucide-react'
 import Skeleton from 'react-loading-skeleton'
 
 interface GraphQLEvent {
@@ -111,6 +111,7 @@ function PassDetailsPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query })
         })
+
 
 
         const json: EventsQueryResponse = await res.json();
@@ -231,6 +232,9 @@ function PassDetailsPage() {
 
   return (
     <main className='pass-details' aria-labelledby='pass-title'>
+      <div className="prev-section">
+        <a href="/alla-pass" className="back-link"><ArrowBigLeft size={40} color="#1d468d" />Tillbaka till alla pass</a>
+      </div>
       <div className='pass-wrapper'>
         <div className='media-wrapper'>
           {pass.image && <img src={pass.image.url} alt={pass.image.alternativeText || pass.title} className='pass-image' />}

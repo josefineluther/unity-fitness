@@ -1,3 +1,13 @@
+.prev-section {
+  position: absolute;
+  left: 5rem;
+}
+
+.prev-section .back-link {
+  display: flex;
+  align-items: center;
+}
+
 .pass-details {
   max-width: 900px;
   margin: 0 auto;
