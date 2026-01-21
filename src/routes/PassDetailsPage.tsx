@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import './PassDetailsPage.css'
 import Button from '../components/Button'
-import { Calendar, Clock, MapPin, Users, ShieldUser, ChevronLeft } from 'lucide-react'
+import { Calendar, Clock, MapPin, Users, User, ChevronLeft } from 'lucide-react'
 import Skeleton from 'react-loading-skeleton'
 
 interface GraphQLEvent {
@@ -278,7 +278,7 @@ function PassDetailsPage() {
               <strong>Tillgängliga platser:</strong> {pass.availableSpots}
             </li>
             <li className='info-card'>
-              <ShieldUser className='icon' color='#1d468d' size={30} />
+              <User className='icon' color='#1d468d' size={30} />
               <strong>Instruktör:</strong> {pass.instructor}
             </li>
           </ul>
@@ -292,11 +292,22 @@ function PassDetailsPage() {
           </p>
         )}
 
-        {!pass.hasPassed && pass.isFull && (
+        {!isBooked && !pass.hasPassed && pass.isFull && (
           <p role='status' className='message'>
             Detta pass är fullbokat och kan inte bokas.
           </p>
         )}
+
+        {isBooked && (
+          <>
+            {pass.isFull && (
+              <p role='status' className='message'>
+                Bokningen genomförd. Passet är nu fullbokat.
+              </p>
+            )}
+          </>
+        )}
+
 
         {!pass.hasPassed && !pass.isFull && (
           <>
