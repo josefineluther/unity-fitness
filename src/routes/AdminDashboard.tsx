@@ -1,49 +1,12 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import "./AdminDashboard.css"
-
-const STRAPI_GRAPHQL_URL =
-  "https://competent-addition-09352633f0.strapiapp.com/graphql"
-
-const STRAPI_BASE = "https://competent-addition-09352633f0.strapiapp.com"
-const API_BASE = `${STRAPI_BASE}/api`
-
-const TOKEN =
-  "d92570d93a81097b957d04b6a423ca6ffb8709b2bf0cfed185aed7f664605709068043b9d9a159eca26126a9578a21ff73ee0ef1a24b7a7328419b26aba43aad9c8e4b25d2b8ebdc9f9f61f52cd5975ea3056959f83fb0f3628d89912e4afcb988180456cdaebd14719844ffbe102f85b09181f8ea9b5c1414a04241b8d38492"
-
-const hasToken = Boolean(TOKEN)
-
-const EVENTS_QUERY = `
-query AdminDashboard {
-  events(pagination: { pageSize: 1000 }, sort: "datetime:asc") {
-    documentId
-    title
-    datetime
-    instructor { name documentId }
-    event_categories { name documentId }
-  }
-}
-`
-
-const META_QUERY = `
-query AdminMeta {
-  instructors { documentId name }
-  eventCategories { documentId name }
-}
-`
-
-type EventItem = {
-  documentId: string
-  title: string
-  datetime: string
-  instructor?: { name: string; documentId?: string } | null
-  event_categories?: { name: string; documentId?: string }[] | null
-}
-
-type Instructor = { documentId: string; name: string }
-type Category = { documentId: string; name: string }
+import { useAdminDashboard, type EventItem } from "../hooks/useAdminDashboard"
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleString("sv-SE", { dateStyle: "medium", timeStyle: "short" })
+  return new Date(iso).toLocaleString("sv-SE", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  })
 }
 
 function toLocal(iso: string) {
@@ -54,205 +17,173 @@ function toIsoFromLocal(localValue: string) {
   return new Date(localValue).toISOString()
 }
 
-async function gqlFetch<T>(query: string): Promise<T> {
-  const res = await fetch(STRAPI_GRAPHQL_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query }),
-  })
-  const json = await res.json()
-  if (json.errors) throw new Error(json.errors[0].message)
-  return json.data as T
-}
-
-async function apiFetch(path: string, options: RequestInit = {}) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...(options.headers as any),
-  }
-  if (TOKEN) headers.Authorization = `Bearer ${TOKEN}`
-
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
-  const json = await res.json().catch(() => ({}))
-
-  if (!res.ok) throw new Error(json?.error?.message || `Request failed: ${res.status}`)
-  return json
-}
-
 export default function AdminDashboard() {
-  const [events, setEvents] = useState<EventItem[]>([])
-  const [instructors, setInstructors] = useState<Instructor[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
+  const {
+    events,
+    studios,
+    instructors,
+    categories,
+    loading,
+    saving,
+    error,
+    hasToken,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+  } = useAdminDashboard()
 
   const [search, setSearch] = useState("")
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
-  // Create form
+  // Create
   const [newTitle, setNewTitle] = useState("")
   const [newDatetime, setNewDatetime] = useState("")
-  const [newInstructorDocId, setNewInstructorDocId] = useState("")
-  const [newCategoryDocIds, setNewCategoryDocIds] = useState<string[]>([])
+  const [newSpots, setNewSpots] = useState(20)
+  const [newStudio, setNewStudio] = useState("")
+  const [newInstructor, setNewInstructor] = useState("")
+  const [newCategories, setNewCategories] = useState<string[]>([])
 
-  // Inline edit
-  const [editingDocId, setEditingDocId] = useState<string | null>(null)
+  // Edit
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState("")
   const [editDatetime, setEditDatetime] = useState("")
-
-  async function refreshEvents() {
-    const data = await gqlFetch<{ events: EventItem[] }>(EVENTS_QUERY)
-    setEvents(data.events ?? [])
-  }
-
-  async function loadMetaOnce() {
-    const data = await gqlFetch<{ instructors: Instructor[]; eventCategories: Category[] }>(
-      META_QUERY
-    )
-    setInstructors(data.instructors ?? [])
-    setCategories(data.eventCategories ?? [])
-  }
-
-  useEffect(() => {
-    async function init() {
-      try {
-        setLoading(true)
-        setError(null)
-        await Promise.all([refreshEvents(), loadMetaOnce()])
-      } catch (e: any) {
-        setError(e.message ?? "Kunde inte hämta data")
-      } finally {
-        setLoading(false)
-      }
-    }
-    init()
-  }, [])
+  const [editSpots, setEditSpots] = useState(1)
+  const [editStudio, setEditStudio] = useState("")
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     if (!q) return events
 
     return events.filter((e) => {
-      const instructor = e.instructor?.name ?? ""
-      const cats = e.event_categories?.map((c) => c.name).join(" ") ?? ""
-      return (
-        e.title.toLowerCase().includes(q) ||
-        instructor.toLowerCase().includes(q) ||
-        cats.toLowerCase().includes(q)
-      )
+      const hay = [
+        e.title,
+        e.slug,
+        e.studio?.name,
+        e.instructor?.name,
+        e.event_categories?.map((c) => c.name).join(" "),
+        e.spots?.toString(),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+
+      return hay.includes(q)
     })
   }, [events, search])
 
   function startEdit(ev: EventItem) {
-    setError(null)
-    setEditingDocId(ev.documentId)
+    setEditingId(ev.documentId)
     setEditTitle(ev.title)
     setEditDatetime(toLocal(ev.datetime))
+    setEditSpots(ev.spots ?? 1)
+    setEditStudio(ev.studio?.documentId ?? "")
   }
 
   function cancelEdit() {
-    setEditingDocId(null)
-    setEditTitle("")
-    setEditDatetime("")
+    setEditingId(null)
   }
 
-  async function createNew(e: React.FormEvent) {
+  async function onCreate(e: React.FormEvent) {
     e.preventDefault()
     if (!hasToken) return
 
-    setSaving(true)
-    setError(null)
-    try {
-      const payload: any = {
-        data: {
-          title: newTitle,
-          datetime: toIsoFromLocal(newDatetime),
-        },
-      }
+    await createEvent({
+      title: newTitle,
+      datetimeIso: toIsoFromLocal(newDatetime),
+      spots: newSpots,
+      studioDocId: newStudio,
+      instructorDocId: newInstructor || undefined,
+      categoryDocIds: newCategories.length ? newCategories : undefined,
+    })
 
-      if (newInstructorDocId) payload.data.instructor = { connect: [newInstructorDocId] }
-      if (newCategoryDocIds.length) payload.data.event_categories = { connect: newCategoryDocIds }
-
-      await apiFetch("/events", { method: "POST", body: JSON.stringify(payload) })
-      await refreshEvents()
-
-      setNewTitle("")
-      setNewDatetime("")
-      setNewInstructorDocId("")
-      setNewCategoryDocIds([])
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setSaving(false)
-    }
+    // reset
+    setNewTitle("")
+    setNewDatetime("")
+    setNewSpots(20)
+    setNewStudio("")
+    setNewInstructor("")
+    setNewCategories([])
   }
 
-  async function saveEdit() {
-    if (!editingDocId || !hasToken) return
-    setSaving(true)
-    setError(null)
-    try {
-      const payload = {
-        data: {
-          title: editTitle,
-          datetime: toIsoFromLocal(editDatetime),
-        },
-      }
+  async function onSaveEdit() {
+    if (!editingId || !hasToken) return
 
-      await apiFetch(`/events/${editingDocId}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      })
+    await updateEvent(editingId, {
+      title: editTitle,
+      datetimeIso: toIsoFromLocal(editDatetime),
+      spots: editSpots,
+      studioDocId: editStudio,
+    })
 
-      await refreshEvents()
-      cancelEdit()
-    } catch (e: any) {
-      setError(e.message)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  async function deleteEvent(ev: EventItem) {
-    if (!hasToken) return
-    if (!confirm("Ta bort passet?")) return
-
-    setSaving(true)
-    setError(null)
-    try {
-      await apiFetch(`/events/${ev.documentId}`, { method: "DELETE" })
-      await refreshEvents()
-      if (editingDocId === ev.documentId) cancelEdit()
-    } catch (e: any) {
-      setError(e.message)
-    } finally {
-      setSaving(false)
-    }
+    cancelEdit()
   }
 
   return (
     <div className="aoPage">
       <h1 className="aoTitle">Admin Dashboard</h1>
-      <p className="aoSubtitle aoMuted">Översikt för pass.</p>
+      <p className="aoSubtitle aoMuted">Skapa, ändra och ta bort pass (demo).</p>
 
       <div className="aoContent">
         <div className="aoCard">
           <h2 className="aoH2">Skapa nytt pass</h2>
 
-          <form className="aoForm" onSubmit={createNew}>
+          <form className="aoForm" onSubmit={onCreate}>
             <label className="aoLabel">
               Titel
-              <input className="aoInput" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} required />
+              <input
+                className="aoInput"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                required
+              />
             </label>
 
             <label className="aoLabel">
               Datum & tid
-              <input className="aoInput" type="datetime-local" value={newDatetime} onChange={(e) => setNewDatetime(e.target.value)} required />
+              <input
+                className="aoInput"
+                type="datetime-local"
+                value={newDatetime}
+                onChange={(e) => setNewDatetime(e.target.value)}
+                required
+              />
+            </label>
+
+            <label className="aoLabel">
+              Platser (max)
+              <input
+                className="aoInput"
+                type="number"
+                min={1}
+                value={newSpots}
+                onChange={(e) => setNewSpots(Number(e.target.value))}
+                required
+              />
+            </label>
+
+            <label className="aoLabel">
+              Studio (rum)
+              <select
+                className="aoInput"
+                value={newStudio}
+                onChange={(e) => setNewStudio(e.target.value)}
+                required
+              >
+                <option value="">Välj studio…</option>
+                {studios.map((s) => (
+                  <option key={s.documentId} value={s.documentId}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <label className="aoLabel">
               Instruktör
-              <select className="aoInput" value={newInstructorDocId} onChange={(e) => setNewInstructorDocId(e.target.value)}>
+              <select
+                className="aoInput"
+                value={newInstructor}
+                onChange={(e) => setNewInstructor(e.target.value)}
+              >
                 <option value="">Välj instruktör…</option>
                 {instructors.map((i) => (
                   <option key={i.documentId} value={i.documentId}>
@@ -267,8 +198,12 @@ export default function AdminDashboard() {
               <select
                 className="aoInput"
                 multiple
-                value={newCategoryDocIds}
-                onChange={(e) => setNewCategoryDocIds(Array.from(e.target.selectedOptions).map((o) => o.value))}
+                value={newCategories}
+                onChange={(e) =>
+                  setNewCategories(
+                    Array.from(e.target.selectedOptions).map((o) => o.value)
+                  )
+                }
               >
                 {categories.map((c) => (
                   <option key={c.documentId} value={c.documentId}>
@@ -276,28 +211,41 @@ export default function AdminDashboard() {
                   </option>
                 ))}
               </select>
-              <small className="aoTiny aoMuted">Tips: håll ctrl/cmd för att välja flera.</small>
+              <small className="aoTiny aoMuted">
+                Håll ctrl/cmd för att välja flera.
+              </small>
             </label>
 
-            <button className="aoBtn" type="submit" disabled={!hasToken || saving}>
+            <button
+              className="aoBtn"
+              type="submit"
+              disabled={!hasToken || saving}
+            >
               {saving ? "Sparar…" : "Skapa"}
             </button>
 
             {!hasToken && (
               <small className="aoTiny aoMuted">
-                CRUD är avstängt utan token (.env.local).
+                CRUD är avstängt utan token.
               </small>
             )}
           </form>
         </div>
 
-        <input className="aoSearch" placeholder="Sök pass / instruktör / typ" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <input
+          className="aoSearch"
+          placeholder="Sök pass / slug / studio / instruktör / kategori…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
         {loading && <p className="aoCenter aoMuted">Laddar…</p>}
         {saving && <p className="aoCenter aoMuted">Uppdaterar…</p>}
         {error && <p className="aoCenter aoError">{error}</p>}
 
-        {!loading && !error && filtered.length === 0 && <p className="aoCenter aoMuted">Inga pass hittades.</p>}
+        {!loading && !error && filtered.length === 0 && (
+          <p className="aoCenter aoMuted">Inga pass hittades.</p>
+        )}
 
         {!loading && filtered.length > 0 && (
           <div className="aoTableWrap">
@@ -305,58 +253,130 @@ export default function AdminDashboard() {
               <thead>
                 <tr>
                   <th>Pass</th>
+                  <th>Slug</th>
                   <th>Datum</th>
+                  <th>Platser</th>
+                  <th>Studio</th>
                   <th>Instruktör</th>
-                  <th>Kategori</th>
+                  <th>Kategorier</th>
                   <th>Åtgärder</th>
                 </tr>
               </thead>
 
               <tbody>
                 {filtered.map((ev) => {
-                  const isEditing = editingDocId === ev.documentId
+                  const editing = editingId === ev.documentId
 
                   return (
                     <tr key={ev.documentId}>
                       <td>
-                        {isEditing ? (
-                          <input className="aoInlineInput" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                        {editing ? (
+                          <input
+                            className="aoInlineInput"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                          />
                         ) : (
                           ev.title
                         )}
                       </td>
 
+                      <td className="aoTiny">{ev.slug ?? "—"}</td>
+
                       <td>
-                        {isEditing ? (
-                          <input className="aoInlineInput" type="datetime-local" value={editDatetime} onChange={(e) => setEditDatetime(e.target.value)} />
+                        {editing ? (
+                          <input
+                            className="aoInlineInput"
+                            type="datetime-local"
+                            value={editDatetime}
+                            onChange={(e) => setEditDatetime(e.target.value)}
+                          />
                         ) : (
                           formatDate(ev.datetime)
                         )}
                       </td>
 
+                      <td>
+                        {editing ? (
+                          <input
+                            className="aoInlineInput"
+                            type="number"
+                            min={1}
+                            value={editSpots}
+                            onChange={(e) =>
+                              setEditSpots(Number(e.target.value))
+                            }
+                          />
+                        ) : (
+                          ev.spots ?? "—"
+                        )}
+                      </td>
+
+                      <td>
+                        {editing ? (
+                          <select
+                            className="aoInlineInput"
+                            value={editStudio}
+                            onChange={(e) => setEditStudio(e.target.value)}
+                          >
+                            <option value="">Välj studio…</option>
+                            {studios.map((s) => (
+                              <option key={s.documentId} value={s.documentId}>
+                                {s.name}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          ev.studio?.name ?? "—"
+                        )}
+                      </td>
+
                       <td>{ev.instructor?.name ?? "—"}</td>
 
-                      <td>{ev.event_categories?.map((c) => c.name).join(", ") ?? "—"}</td>
+                      <td>
+                        {ev.event_categories?.map((c) => c.name).join(", ") ??
+                          "—"}
+                      </td>
 
                       <td>
                         <div className="aoActions">
-                          {!isEditing ? (
+                          {!editing ? (
                             <>
-                              <button className="aoBtn aoBtnSecondary" onClick={() => startEdit(ev)} disabled={!hasToken || saving} type="button">
+                              <button
+                                className="aoBtn aoBtnSecondary"
+                                type="button"
+                                onClick={() => startEdit(ev)}
+                                disabled={!hasToken || saving}
+                              >
                                 Ändra
                               </button>
 
-                              <button className="aoBtn aoBtnDanger" onClick={() => deleteEvent(ev)} disabled={!hasToken || saving} type="button">
+                              <button
+                                className="aoBtn aoBtnDanger"
+                                type="button"
+                                onClick={() => deleteEvent(ev.documentId)}
+                                disabled={!hasToken || saving}
+                              >
                                 Ta bort
                               </button>
                             </>
                           ) : (
                             <>
-                              <button className="aoBtn" onClick={saveEdit} disabled={!hasToken || saving} type="button">
+                              <button
+                                className="aoBtn"
+                                type="button"
+                                onClick={onSaveEdit}
+                                disabled={!hasToken || saving}
+                              >
                                 {saving ? "Sparar…" : "Spara"}
                               </button>
 
-                              <button className="aoBtn aoBtnSecondary" onClick={cancelEdit} disabled={saving} type="button">
+                              <button
+                                className="aoBtn aoBtnSecondary"
+                                type="button"
+                                onClick={cancelEdit}
+                                disabled={saving}
+                              >
                                 Avbryt
                               </button>
                             </>

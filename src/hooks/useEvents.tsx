@@ -25,7 +25,7 @@ export function useEvents({ pollingInterval = 60000 }: UseEventsOptions = {}) {
           studio { name }
           spots
           minutes
-          bookings { booking_reference }
+          bookings { datetime }
           recurrence_weekday
           recurrence_interval
           recurrence_end_date

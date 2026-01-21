@@ -56,7 +56,7 @@ function EventList() {
           studio { name }
           spots
           minutes
-          bookings { booking_reference }
+          bookings { datetime }
           recurrence_weekday
           recurrence_interval
           recurrence_end_date
@@ -157,7 +157,8 @@ function EventList() {
           {!loading &&
             filteredEvents.length > 0 &&
             filteredEvents.map((event) => {
-              const booked = event.bookings?.length || 0
+              const filteredBookings = event.bookings?.filter((booking) => new Date(booking.datetime).getTime() === new Date(event.datetime).getTime()) ?? []
+              const booked = filteredBookings?.length
               const availableSpots = event.spots - booked
               const time = new Date(event.datetime).toLocaleTimeString('sv-SE', {
                 hour: '2-digit',
