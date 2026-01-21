@@ -37,12 +37,12 @@ function Home() {
           <h1>Unity Fitness</h1>
           <p className='lead'>Stilrent. Effektivt. För alla.</p>
           <div className='hero-actions'>
-            <a href='/alla-pass' className='btn primary'>
-              Se schema
-            </a>
-            <a className='btn ghost' href='/medlemskap'>
-              Bli medlem
-            </a>
+            <Link to='/alla-pass'>
+              <Button color='primary' text='Se schema'></Button>
+            </Link>
+            <Link to='/medlemskap'>
+              <Button text='Bli medlem'></Button>
+            </Link>
           </div>
         </div>
       </header>
