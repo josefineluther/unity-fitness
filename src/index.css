@@ -44,11 +44,14 @@
 }
 
 a {
-  margin: 0.5rem;
   font-weight: 500;
   text-decoration: inherit;
   transition: all 0.1s ease;
   color: var(--text-color);
+}
+
+nav a {
+  margin: 0.5rem;
 }
 
 nav a:hover {
