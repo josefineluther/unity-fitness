@@ -3,6 +3,7 @@ import type { Article } from '../types/types'
 
 export function useArticles() {
   const [articles, setArticles] = useState<Article[]>([])
+    const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     async function getArticles() {
@@ -36,9 +37,10 @@ export function useArticles() {
         return db - da
       })
       setArticles(list)
+        setLoading(false)
     }
     getArticles()
   }, [])
 
-  return { articles }
+    return { articles, loading }
 }

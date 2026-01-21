@@ -11,7 +11,7 @@ import Button from '../components/Button.tsx'
 
 function Home() {
   const { events, loading } = useEvents({ pollingInterval: 60000 })
-  const { articles } = useArticles()
+  const { articles, loading: articlesLoading } = useArticles()
 
   const sortedArticles = useMemo(() => {
     return [...articles].sort((a: any, b: any) => {
@@ -127,7 +127,26 @@ function Home() {
       </section>
       <section id='articles' className='articles' aria-label='Senaste artiklar'>
         <h2>Nyheter</h2>
-        {articles.length === 0 ? (
+        {articlesLoading ? (
+          <SkeletonTheme baseColor='#dfebff' highlightColor='#f6f6f6'>
+            <div className='articles-grid'>
+              {[...Array(4)].map((_, i) => (
+                <article key={i} className='article-card-modern card'>
+                  <div className='article-visual placeholder'>
+                    <Skeleton height={180} />
+                  </div>
+                  <div className='article-body'>
+                    <Skeleton height={20} width='70%' />
+                    <Skeleton height={14} width='90%' />
+                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
+                      <Skeleton height={28} width={90} />
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </SkeletonTheme>
+        ) : articles.length === 0 ? (
           <p>Inga nyheter</p>
         ) : (
           <div className='articles-grid'>
