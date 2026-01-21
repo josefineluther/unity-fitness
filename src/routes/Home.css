@@ -341,4 +341,16 @@
   .next-pass-grid {
     gap: 1.25rem;
   }
+
+  .hero-overlay {
+    margin-top: 3rem;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
 }
