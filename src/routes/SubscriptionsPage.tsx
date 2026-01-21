@@ -37,7 +37,7 @@ export default function SubscriptionsPage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query }),
-          }
+          },
         );
 
         const json = await res.json();
@@ -132,71 +132,72 @@ export default function SubscriptionsPage() {
         <h2 id="membership-guide-title" className="section-title">
           Vilket medlemskap passar dig?
         </h2>
+        <div className="comparison-table-wrapper">
+          <div className="comparison-table">
+            <div className="comparison-row header-row">
+              <div className="feature-header">
+                <h3>Jämför medlemskap</h3>
+              </div>
 
-        <div className="comparison-table">
-          <div className="comparison-row header-row">
-            <div className="feature-header">
-              <h3>Jämför medlemskap</h3>
+              <div className="plan-header">
+                <h3>Lugn Start</h3>
+                <p>Dagtid & lugna pass</p>
+              </div>
+
+              <div className="plan-header highlighted">
+                <h3>Harmoni</h3>
+                <p>Balans & återhämtning</p>
+              </div>
+
+              <div className="plan-header">
+                <h3>Helhet</h3>
+                <p>Allt utan begränsningar</p>
+              </div>
             </div>
 
-            <div className="plan-header">
-              <h3>Lugn Start</h3>
-              <p>Dagtid & lugna pass</p>
+            <div className="comparison-row">
+              <div className="feature-cell">Tillgång dagtid</div>
+
+              <div className="check"></div>
+              <div className="check"></div>
+              <div className="check"></div>
             </div>
 
-            <div className="plan-header highlighted">
-              <h3>Harmoni</h3>
-              <p>Balans & återhämtning</p>
+            <div className="comparison-row">
+              <div className="feature-cell expandable">
+                <button className="feature-expand" aria-expanded="false">
+                  Yoga & pilates
+                </button>
+              </div>
+
+              <div className="check"></div>
+              <div className="check"></div>
+              <div className="check"></div>
             </div>
 
-            <div className="plan-header">
-              <h3>Helhet</h3>
-              <p>Allt utan begränsningar</p>
-            </div>
-          </div>
+            <div className="comparison-row">
+              <div className="feature-cell">Styrkepass</div>
 
-          <div className="comparison-row">
-            <div className="feature-cell">Tillgång dagtid</div>
-
-            <div className="check"></div>
-            <div className="check"></div>
-            <div className="check"></div>
-          </div>
-
-          <div className="comparison-row">
-            <div className="feature-cell expandable">
-              <button className="feature-expand" aria-expanded="false">
-                Yoga & pilates
-              </button>
+              <div></div>
+              <div className="check"></div>
+              <div className="check"></div>
             </div>
 
-            <div className="check"></div>
-            <div className="check"></div>
-            <div className="check"></div>
-          </div>
+            <div className="comparison-row">
+              <div className="feature-cell">Bastu & återhämtning</div>
 
-          <div className="comparison-row">
-            <div className="feature-cell">Styrkepass</div>
+              <div></div>
+              <div className="check"></div>
+              <div className="check"></div>
+            </div>
 
-            <div></div>
-            <div className="check"></div>
-            <div className="check"></div>
-          </div>
+            <div className="comparison-row">
+              <div className="feature-cell">Workshops & events</div>
 
-          <div className="comparison-row">
-            <div className="feature-cell">Bastu & återhämtning</div>
-
-            <div></div>
-            <div className="check"></div>
-            <div className="check"></div>
-          </div>
-
-          <div className="comparison-row">
-            <div className="feature-cell">Workshops & events</div>
-
-            <div></div>
-            <div></div>
-            <div className="check"></div>
+              <div></div>
+              <div></div>
+              <div className="check"></div>
+            </div>
           </div>
         </div>
       </section>

@@ -9,10 +9,11 @@ main .page {
 
 .skeleton {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 1280px;
+  gap: 3rem;
   border-radius: 14px;
-  padding: 10rem;
+  padding: 8rem 1rem;
 }
 
 .subscription-features {
@@ -112,11 +113,6 @@ main .page {
   cursor: pointer;
 }
 
-.expand-icon {
-  opacity: 0.6;
-  font-size: 0.8rem;
-}
-
 .plan-header {
   text-align: center;
   padding: 2rem 1rem;
@@ -198,4 +194,38 @@ main .page {
   margin-top: 1rem;
   line-height: 1.6;
   font-size: 1rem;
+}
+
+@media (max-width: 1029px) {
+  .skeleton {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 715px) {
+  .skeleton {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (max-width: 449px) {
+  .membership-guide {
+    width: 99%;
+    padding: 0;
+  }
+
+  .comparison-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    width: 100%;
+  }
+  .comparison-table {
+    min-width: 600px;
+  }
+
+  .comparison-row {
+    display: contents;
+    color: #000;
+  }
 }

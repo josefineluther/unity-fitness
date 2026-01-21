@@ -237,7 +237,7 @@ function PassDetailsPage() {
   if (loading)
     return (
       <div className='skeleton'>
-        <Skeleton height='40rem' width='60%' style={{ marginBottom: '10px' }} />
+        <Skeleton height='40rem' width='100%' style={{ marginBottom: '10px' }} />
       </div>
     )
   if (!pass) return <p role='alert'>Kan inte hitta passet du söker.</p>
@@ -329,9 +329,7 @@ function PassDetailsPage() {
               <>
                 {isSubmitting ? (
                   <div>
-                    <Skeleton height='2rem' width='100%' style={{ marginBottom: '1rem' }} />
-                    <Skeleton height='2rem' width='100%' style={{ marginBottom: '1rem' }} />
-                    <Skeleton height='3rem' width='50%' />
+                    <Skeleton height='3rem' width='100%' style={{ marginBottom: '1rem' }} />
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit}>

@@ -149,6 +149,12 @@ input:focus {
   text-align: center;
 }
 
+@media (max-width: 1200px) {
+  .prev-section {
+    display: none;
+  }
+}
+
 @media (max-width: 880px) {
   .info-grid ul {
     grid-template-columns: 1fr;
@@ -168,4 +174,5 @@ input:focus {
   .booking {
     margin: 0;
   }
+
 }
