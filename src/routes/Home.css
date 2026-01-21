@@ -329,7 +329,9 @@
     justify-items: center;
   }
 
-  .next-pass-grid > a {
+  
+  .next-pass-grid > a,
+  .next-pass-grid > .event-in-list {
     width: 100%;
     max-width: 360px;
   }
