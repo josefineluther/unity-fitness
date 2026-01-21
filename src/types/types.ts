@@ -48,4 +48,5 @@ export interface Article {
   cover?: { url?: string; alternativeText?: string }
   author: { name: string }
   category: { name: string }
+  publishedAt?: string
 }
