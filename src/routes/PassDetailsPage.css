@@ -160,8 +160,12 @@ input:focus {
   }
 }
 
-@media (max-width: 389px) {
+@media (max-width: 390px) {
   .icon {
     display: none;
+  }
+
+  .booking {
+    margin: 0;
   }
 }
