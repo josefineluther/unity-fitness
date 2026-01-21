@@ -129,9 +129,7 @@ function Home() {
                 <h3 className='article-title'>{a.title}</h3>
                 {a.description && <p className='article-excerpt'>{a.description}</p>}
 
-                <a className='btn ghost' href={`/articles/${a.slug ?? ''}`}>
-                  Läs mer
-                </a>
+               
               </article>
             ))}
           </div>
