@@ -244,10 +244,10 @@ function PassDetailsPage() {
 
   return (
     <main className='pass-details' aria-labelledby='pass-title'>
-      <div className='prev-section'>
-        <a href='/alla-pass' className='back-link'>
-          <ChevronLeft size={40} color='#1d468d' className='icon' alt-text='Tillbaka till alla pass' />
-        </a>
+      <div className="prev-section">
+        <a href="/alla-pass" className="back-link"><ChevronLeft size={40} color="#1d468d" className='icon' /><span className="sr-only">
+         Tillbaka till alla pass
+      </span></a>
       </div>
       <div className='pass-wrapper'>
         <div className='media-wrapper'>

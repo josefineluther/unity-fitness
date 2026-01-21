@@ -8,6 +8,14 @@
   align-items: space-around;
 }
 
+.sr-only {
+  height: 1px;
+  width: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  overflow: hidden;
+  position: absolute;
+}
+
 .pass-details {
   max-width: 900px;
   margin: 0 auto;
