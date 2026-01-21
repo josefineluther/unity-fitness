@@ -7,6 +7,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 import { Link } from 'react-router-dom'
 import placeholderImg from '/placeholder.jpeg'
 import { Clock, Flag, User, Users } from 'lucide-react'
+import Button from '../components/Button.tsx'
 
 function Home() {
   const { events, loading } = useEvents({ pollingInterval: 60000 })
@@ -36,12 +37,12 @@ function Home() {
           <h1>Unity Fitness</h1>
           <p className='lead'>Stilrent. Effektivt. För alla.</p>
           <div className='hero-actions'>
-            <a href='#classes' className='btn primary'>
-              Se schema
-            </a>
-            <a className='btn ghost' href='#membership'>
-              Bli medlem
-            </a>
+            <Link to='/alla-pass'>
+              <Button color='primary' text='Se schema'></Button>
+            </Link>
+            <Link to='/medlemskap'>
+              <Button text='Bli medlem'></Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -143,8 +144,6 @@ function Home() {
 
                 <h3 className='article-title'>{a.title}</h3>
                 {a.description && <p className='article-excerpt'>{a.description}</p>}
-
-               
               </article>
             ))}
           </div>

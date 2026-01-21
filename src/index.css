@@ -5,6 +5,7 @@
   --background-color: #f6f6f6;
   --hover-dark: #747474;
   --hover-light: #e0e0e0;
+  --hover-primary: rgb(248, 255, 176);
   --error: rgb(255, 128, 128);
   --border-radius: 10px;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -105,12 +106,21 @@ nav .button {
   color: var(--background-color);
 }
 
+.button.primary {
+  background: var(--primary-color);
+  color: var(--text-color);
+}
+
 .button.light:hover {
   background: var(--hover-light);
 }
 
 .button.dark:hover {
   background: var(--hover-dark);
+}
+
+.button.primary:hover {
+  background: var(--hover-primary);
 }
 
 nav {
