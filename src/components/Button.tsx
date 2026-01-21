@@ -1,6 +1,6 @@
 type ButtonProps = {
   text: string
-  color?: 'light' | 'dark'
+  color?: 'light' | 'dark' | 'primary'
   onClick?: () => void
   type?: 'button' | 'submit' | 'reset'
 }

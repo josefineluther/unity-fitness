@@ -12,6 +12,7 @@ export function useArticles() {
           title
           description
           slug
+          publishedAt
           cover { url alternativeText }
           author { name }
           category { name }
@@ -27,7 +28,14 @@ export function useArticles() {
       })
 
       const data = await res.json()
-      setArticles(data.data.articles)
+      
+      const list = Array.isArray(data?.data?.articles) ? data.data.articles : []
+      list.sort((a: any, b: any) => {
+        const da = a.publishedAt ? new Date(a.publishedAt).getTime() : 0
+        const db = b.publishedAt ? new Date(b.publishedAt).getTime() : 0
+        return db - da
+      })
+      setArticles(list)
     }
     getArticles()
   }, [])

@@ -1,8 +1,7 @@
 .home-page {
-  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 2rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -54,6 +53,10 @@
   display: flex;
   gap: 0.75rem;
   justify-content: center;
+}
+
+.hero-actions button {
+  margin: 0;
 }
 
 .btn {
@@ -329,7 +332,8 @@
     justify-items: center;
   }
 
-  .next-pass-grid > a {
+  .next-pass-grid > a,
+  .next-pass-grid > .event-in-list {
     width: 100%;
     max-width: 360px;
   }

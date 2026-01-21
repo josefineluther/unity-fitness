@@ -7,15 +7,24 @@ import 'react-loading-skeleton/dist/skeleton.css'
 import { Link } from 'react-router-dom'
 import placeholderImg from '/placeholder.jpeg'
 import { Clock, Flag, User, Users } from 'lucide-react'
+import Button from '../components/Button.tsx'
 
 function Home() {
   const { events, loading } = useEvents({ pollingInterval: 60000 })
   const { articles } = useArticles()
 
+  const sortedArticles = useMemo(() => {
+    return [...articles].sort((a: any, b: any) => {
+      const da = a?.publishedAt ? new Date(a.publishedAt).getTime() : 0
+      const db = b?.publishedAt ? new Date(b.publishedAt).getTime() : 0
+      return db - da
+    })
+  }, [articles])
+
   const upcoming = useMemo(
     () =>
       events
-        .filter((e) => typeof e.datetime === 'string' && new Date(e.datetime).getTime() >= Date.now())
+        .filter((e) => typeof e.datetime === 'string' && new Date(e.datetime).getTime() >= new Date().getTime())
         .sort((a, b) => new Date(a.datetime as string).getTime() - new Date(b.datetime as string).getTime())
         .slice(0, 3),
     [events]
@@ -28,12 +37,12 @@ function Home() {
           <h1>Unity Fitness</h1>
           <p className='lead'>Stilrent. Effektivt. För alla.</p>
           <div className='hero-actions'>
-            <a href='#classes' className='btn primary'>
-              Se schema
-            </a>
-            <a className='btn ghost' href='#membership'>
-              Bli medlem
-            </a>
+            <Link to='/alla-pass'>
+              <Button color='primary' text='Se schema'></Button>
+            </Link>
+            <Link to='/medlemskap'>
+              <Button text='Bli medlem'></Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -129,16 +138,12 @@ function Home() {
           <p>Inga nyheter</p>
         ) : (
           <div className='articles-grid'>
-            {articles.slice(0, 3).map((a: any) => (
+            {sortedArticles.slice(0, 3).map((a: any) => (
               <article key={a.id ?? a.slug} className='article-card card'>
                 {a.cover?.url && <img src={a.cover.url} alt={a.cover.alternativeText ?? a.title} className='article-image' />}
 
                 <h3 className='article-title'>{a.title}</h3>
                 {a.description && <p className='article-excerpt'>{a.description}</p>}
-
-                <a className='btn ghost' href={`/articles/${a.slug ?? ''}`}>
-                  Läs mer
-                </a>
               </article>
             ))}
           </div>
