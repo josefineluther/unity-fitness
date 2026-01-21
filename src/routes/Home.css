@@ -131,21 +131,6 @@
   gap: 0.5rem;
 }
 
-.class-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 6px rgba(20, 20, 20, 0.03);
-}
-
-.class-item .time {
-  font-size: 0.9rem;
-  color: rgba(45, 45, 45, 0.7);
-}
-
 .actions {
   display: flex;
   gap: 0.75rem;
@@ -352,5 +337,9 @@
     margin-bottom: 10px;
     padding-top: 0px;
     padding-bottom: 0px;
+  }
+  
+  .hero-actions {
+    display: none;
   }
 }

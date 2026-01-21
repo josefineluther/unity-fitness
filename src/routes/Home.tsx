@@ -36,7 +36,14 @@ function Home() {
         <div className='hero-overlay'>
           <h1>Unity Fitness</h1>
           <p className='lead'>Stilrent. Effektivt. För alla.</p>
-          
+          <div className='hero-actions'>
+            <a href='/alla-pass' className='btn primary'>
+              Se schema
+            </a>
+            <a className='btn ghost' href='/medlemskap'>
+              Bli medlem
+            </a>
+          </div>
         </div>
       </header>
       <section className='next-pass' aria-live='polite'>
