@@ -130,7 +130,7 @@ export default function AdminDashboard() {
   return (
     <div className="aoPage">
       <h1 className="aoTitle">Admin Dashboard</h1>
-      <p className="aoSubtitle aoMuted">Skapa, ändra och ta bort pass (demo).</p>
+      <p className="aoSubtitle aoMuted">Skapa, ändra och ta bort pass.</p>
 
       <div className="aoContent">
         <div className="aoCard">
