@@ -118,7 +118,7 @@ export default function SubscriptionsPage() {
             'Personlig introduktion',
             'Workshops & events',
           ]}
-          image={events[3]?.image}
+          image={events[9]?.image}
         />
       </section>
 
