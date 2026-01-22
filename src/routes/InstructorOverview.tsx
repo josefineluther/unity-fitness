@@ -63,12 +63,24 @@ export default function InstructorOverview() {
 
         const sorted: Instructor[] = [...json.data.instructors]
           .sort((a, b) => a.name.localeCompare(b.name, "sv"))
-          .map((i) => ({
-            ...i,
-            events: [...(i.events ?? [])].sort(
-              (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
-            ),
-          }))
+          .map((i) => {
+            
+            const now = Date.now()
+            const upcoming = (i.events ?? []).filter((ev: EventItem) => {
+              try {
+                return new Date(ev.datetime).getTime() >= now
+              } catch {
+                return false
+              }
+            })
+
+            return {
+              ...i,
+              events: [...upcoming].sort(
+                (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
+              ),
+            }
+          })
 
         setInstructors(sorted)
       } catch (err: any) {
