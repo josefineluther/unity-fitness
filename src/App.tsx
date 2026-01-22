@@ -6,9 +6,10 @@ import InstructorOverview from './routes/InstructorOverview'
 import type { Page } from './types/types'
 import AllEvents from './routes/AllEvents'
 import { usePages } from './hooks/usePages'
-import PassDetailsPage from './routes/PassDetailsPage'
+import PassDetails from './routes/PassDetails'
 import ScrollToTop from './hooks/scrollToTop'
-import SubscriptionsPage from './routes/SubscriptionsPage'
+import Subscriptions from './routes/Subscriptions'
+import Footer from './components/footer'
 
 function App() {
   const { pages } = usePages()
@@ -45,13 +46,15 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/alla-pass' element={<AllEvents />} />
-          <Route path='/pass/:id' element={<PassDetailsPage />} />
+          <Route path='/pass/:id' element={<PassDetails />} />
           <Route path='/admin' element={<AdminDashboard />} />
           <Route path='/admin/instructors' element={<InstructorOverview />} />
-          <Route path='/medlemskap' element={<SubscriptionsPage />} />
+          <Route path='/medlemskap' element={<Subscriptions />} />
         </Routes>
       </main>
-      <footer>
+      <Footer />
+
+      {/* <footer>
         <div className='staff'>
           <h2>Admin</h2>
           <Link to='/admin' className='footer-admin-link'>
@@ -64,7 +67,7 @@ function App() {
 
         <hr />
         <p>&copy; {new Date().getFullYear()} Unity Fitness</p>
-      </footer>
+      </footer> */}
     </BrowserRouter>
   )
 }

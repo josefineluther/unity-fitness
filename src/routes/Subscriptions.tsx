@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './SubscriptionsPage.css';
+import './Subscriptions.css';
 import Button from '../components/Button';
 import { motion } from 'framer-motion';
 import Skeleton from 'react-loading-skeleton';

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
-import './PassDetailsPage.css'
+import './PassDetails.css'
 import Button from '../components/Button'
 import { Calendar, Clock, MapPin, Users, User, ChevronLeft } from 'lucide-react'
 import Skeleton from 'react-loading-skeleton'
