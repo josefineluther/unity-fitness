@@ -50,10 +50,20 @@ export default function AdminDashboard() {
   const [editStudio, setEditStudio] = useState("")
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    if (!q) return events
+    
+    const now = Date.now()
+    const upcomingEvents = events.filter((ev) => {
+      try {
+        return new Date(ev.datetime).getTime() >= now
+      } catch {
+        return false
+      }
+    })
 
-    return events.filter((e) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return upcomingEvents
+
+    return upcomingEvents.filter((e) => {
       const hay = [
         e.title,
         e.slug,
