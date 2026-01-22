@@ -59,16 +59,19 @@ export default function SubscriptionsPage() {
           height="20rem"
           width="100%"
           style={{ marginBottom: '10px' }}
+          baseColor='#dfebff' highlightColor='#f6f6f6'
         />
         <Skeleton
           height="20rem"
           width="100%"
           style={{ marginBottom: '10px' }}
+          baseColor='#dfebff' highlightColor='#f6f6f6'
         />
         <Skeleton
           height="20rem"
           width="100%"
           style={{ marginBottom: '10px' }}
+          baseColor='#dfebff' highlightColor='#f6f6f6'
         />
       </div>
     );

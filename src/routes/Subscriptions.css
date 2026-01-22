@@ -8,12 +8,12 @@ main .page {
 }
 
 .skeleton {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   max-width: 1280px;
-  gap: 3rem;
-  border-radius: 14px;
-  padding: 8rem 1rem;
+  margin: 5rem auto;
+  padding: 2rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
 }
 
 .subscription-features {
